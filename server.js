@@ -7,7 +7,8 @@ var express = require('express'),
     LocalStrategy = require('passport-local'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    methodOverride = require('method-override');
+    methodOverride = require('method-override'),
+    session = require('express-session');
 
 
 var funct = require('./functions.js');
@@ -68,10 +69,10 @@ app.use(morgan('combined'))
 ////
 // Configure Express
 //app.use(express.logger());
-app.use(cookieParser);
-app.use(bodyParser);
-app.use(methodOverride);
-app.use(express.session({ secret: 'supernova' }));
+app.use(cookieParser());
+app.use(bodyParser());
+app.use(methodOverride());
+app.use(session({ secret: 'supernova' }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -90,8 +91,6 @@ app.use(function(req, res, next){
 
   next();
 });
-
-app.use(app.router);
 
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
