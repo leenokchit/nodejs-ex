@@ -209,7 +209,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-/*
+
 ////router
 //displays our homepage
 app.get('/home', function(req, res){
@@ -244,7 +244,7 @@ app.get('/logout', function(req, res){
   req.session.notice = "You have successfully been logged out " + name + "!";
 });
 ////
-*/
+
 
 // error handling
 app.use(function(err, req, res, next){
