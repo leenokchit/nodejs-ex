@@ -28,7 +28,6 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-/*
 // Use the LocalStrategy within Passport to login users.
 passport.use('local-signin', new LocalStrategy(
   {passReqToCallback : true}, //allows us to pass back the request to the callback
@@ -52,6 +51,29 @@ passport.use('local-signin', new LocalStrategy(
   }
 ));
 
+// Use the LocalStrategy within Passport to Register/"signup" users.
+passport.use('local-signup', new LocalStrategy(
+  {passReqToCallback : true}, //allows us to pass back the request to the callback
+  function(req, username, password, done) {
+    funct.localReg(username, password)
+    .then(function (user) {
+      if (user) {
+        console.log("REGISTERED: " + user.username);
+        req.session.success = 'You are successfully registered and logged in ' + user.username + '!';
+        done(null, user);
+      }
+      if (!user) {
+        console.log("COULD NOT REGISTER");
+        req.session.error = 'That username is already in use, please try a different one.'; //inform user could not log them in
+        done(null, user);
+      }
+    })
+    .fail(function (err){
+      console.log(err.body);
+    });
+  }
+));
+
 // Simple route middleware to ensure user is authenticated.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
@@ -59,7 +81,7 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/signin');
 }
 //===============PASSPORT END==============
-*/
+
 
 
 app.engine('html', require('ejs').renderFile);
