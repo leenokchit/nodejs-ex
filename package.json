@@ -19,7 +19,11 @@
     "passport-google": "^0.3.0",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.2",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "cookies-parser": "^1.2.0",
+    "body-parser": "^1.18.2",
+    "method-override": "^2.3.10",
+    "express-session": "^1.15.6"
   },
   "engine": {
     "node": "*",
