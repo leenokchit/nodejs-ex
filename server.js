@@ -3,7 +3,8 @@ var express = require('express'),
     app     = express(),
     morgan  = require('morgan'),
     exphbs  = require('express-handlebars'),
-    passport = require('passport');
+    passport = require('passport'),
+    LocalStrategy = require('passport-local');
 
 var funct = require('./functions.js');
 
