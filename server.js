@@ -78,7 +78,7 @@ passport.use('local-signup', new LocalStrategy(
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   req.session.error = 'Please sign in!';
-  res.redirect('/signin');
+  res.redirect('/signin'); 
 }
 //===============PASSPORT END==============
 
