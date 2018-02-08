@@ -4,7 +4,11 @@ var express = require('express'),
     morgan  = require('morgan'),
     exphbs  = require('express-handlebars'),
     passport = require('passport'),
-    LocalStrategy = require('passport-local');
+    LocalStrategy = require('passport-local'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+    methodOverride = require('method-override');
+
 
 var funct = require('./functions.js');
 
@@ -60,13 +64,13 @@ function ensureAuthenticated(req, res, next) {
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 
-/*
+
 ////
 // Configure Express
-app.use(express.logger());
-app.use(express.cookieParser());
-app.use(express.bodyParser());
-app.use(express.methodOverride());
+//app.use(express.logger());
+app.use(cookieParser);
+app.use(bodyParser);
+app.use(methodOverride);
 app.use(express.session({ secret: 'supernova' }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,7 +100,7 @@ var hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 ////
-*/
+
 
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
