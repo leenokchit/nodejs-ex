@@ -174,6 +174,7 @@ var initDb = function(callback) {
 };
 
 app.get('/', function (req, res) {
+  console.log("index: " + req.ip + " connected at " + Date.now());
   // try to initialize the db on every request if it's not already
   // initialized.
   if (!db) {
@@ -195,6 +196,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/pagecount', function (req, res) {
+  console.log("pagecount: " + req.ip + " connected at " + Date.now());
   // try to initialize the db on every request if it's not already
   // initialized.
   if (!db) {
@@ -213,11 +215,13 @@ app.get('/pagecount', function (req, res) {
 ////router
 //displays our homepage
 app.get('/home', function(req, res){
+  console.log("home: " + req.ip + " connected at " + Date.now());
   res.render('home', {user: req.user});
 });
 
 //displays our signup page
 app.get('/signin', function(req, res){
+  console.log("signin: " + req.ip + " connected at " + Date.now());
   res.render('signin');
 });
 
