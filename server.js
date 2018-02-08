@@ -23,6 +23,7 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
+/*
 // Use the LocalStrategy within Passport to login users.
 passport.use('local-signin', new LocalStrategy(
   {passReqToCallback : true}, //allows us to pass back the request to the callback
@@ -53,11 +54,13 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/signin');
 }
 //===============PASSPORT END==============
+*/
 
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 
+/*
 ////
 // Configure Express
 app.use(express.logger());
@@ -93,6 +96,7 @@ var hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 ////
+*/
 
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
@@ -144,29 +148,6 @@ var initDb = function(callback) {
   });
 };
 
-// Use the LocalStrategy within Passport to Register/"signup" users.
-passport.use('local-signup', new LocalStrategy(
-  {passReqToCallback : true}, //allows us to pass back the request to the callback
-  function(req, username, password, done) {
-    funct.localReg(username, password)
-    .then(function (user) {
-      if (user) {
-        console.log("REGISTERED: " + user.username);
-        req.session.success = 'You are successfully registered and logged in ' + user.username + '!';
-        done(null, user);
-      }
-      if (!user) {
-        console.log("COULD NOT REGISTER");
-        req.session.error = 'That username is already in use, please try a different one.'; //inform user could not log them in
-        done(null, user);
-      }
-    })
-    .fail(function (err){
-      console.log(err.body);
-    });
-  }
-));
-
 app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
@@ -203,6 +184,7 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
+/*
 ////router
 //displays our homepage
 app.get('/home', function(req, res){
@@ -237,6 +219,7 @@ app.get('/logout', function(req, res){
   req.session.notice = "You have successfully been logged out " + name + "!";
 });
 ////
+*/
 
 // error handling
 app.use(function(err, req, res, next){
