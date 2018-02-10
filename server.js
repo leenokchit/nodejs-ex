@@ -114,6 +114,13 @@ app.use(function(req, res, next){
   next();
 });
 
+
+////
+app.use('/js', express.static(__dirname + '/js/bootstrap')); // redirect bootstrap JS
+app.use('/js', express.static(__dirname + '/js/jquery')); // redirect JS jQuery
+app.use('/css', express.static(__dirname + '/css/bootstrap')); // redirect CSS bootstrap
+////
+
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
     defaultLayout: 'main',
