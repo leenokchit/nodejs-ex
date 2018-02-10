@@ -20,6 +20,7 @@ describe('Basic routes tests', function() {
     })
 
     it('GET to /pagecount should return 200', function(done){
+        console.log(reqServer);
         chai.request(reqServer)
         .get('/pagecount')
         .end(function(err, res) {

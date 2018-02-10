@@ -114,6 +114,13 @@ app.use(function(req, res, next){
   next();
 });
 
+
+//// 
+app.use('/js', express.static(__dirname + '/js/bootstrap')); // redirect bootstrap JS
+app.use('/js', express.static(__dirname + '/js/jquery')); // redirect JS jQuery
+app.use('/css', express.static(__dirname + '/css/bootstrap')); // redirect CSS bootstrap
+////
+
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
     defaultLayout: 'main',
@@ -197,6 +204,7 @@ app.get('/', function (req, res) {
 
 app.get('/pagecount', function (req, res) {
   console.log("pagecount: " + req.ip + " connected at " + Date.now());
+  
   // try to initialize the db on every request if it's not already
   // initialized.
   if (!db) {
@@ -205,6 +213,7 @@ app.get('/pagecount', function (req, res) {
   if (db) {
     db.collection('counts').count(function(err, count ){
       res.send('{ pageCount: ' + count + '}');
+      console.log( 'pageCount: ' + count );
     });
   } else {
     res.send('{ pageCount: -1 }');
