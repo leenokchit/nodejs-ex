@@ -19,11 +19,11 @@
 
   <body>
 
-    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="#">Navbar w/ text</a>
+      <a class="navbar-brand" href="#">iStory</a>
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
@@ -38,12 +38,14 @@
         </ul>
         {{#if user}}
         <span class="navbar-text">
-          {{user.username}}
+          <form class="form-inline">
+            Hi, {{user.username}}
+            <button class="btn btn-outline-success" type="button"><a href="/logout">Log Out</a></button>
+          </form>
         </span>
         {{else}}
         <form class="form-inline">
-          <button class="btn btn-outline-success" type="button">Main button</button>
-          <button class="btn btn-sm align-middle btn-outline-secondary" type="button">Smaller button</button>
+          <button class="btn btn-outline-success" type="button"><a href="/login">Log In</a></button>
         </form>
         {{/if}}
       </div>
