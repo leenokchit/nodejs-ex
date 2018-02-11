@@ -156,6 +156,14 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
 
   }
 }
+
+//for dev
+if(process.env.APPMODE == "DEV")
+{
+  mongoURL = 'mongodb://admin:padmin@127.0.0.1:27117/istory';
+}
+//
+
 var db = null,
     dbDetails = new Object();
 
