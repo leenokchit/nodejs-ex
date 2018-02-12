@@ -162,6 +162,7 @@ if(process.env.APPMODE == "DEV")
 {
   mongoURL = 'mongodb://admin:padmin@127.0.0.1:27117/istory';
 }
+
 //
 
 var db = null,
@@ -226,6 +227,26 @@ app.get('/pagecount', function (req, res) {
   } else {
     res.send('{ pageCount: -1 }');
   }
+});
+
+app.get('/flickr', function (req, res) {
+  console.log("flickr: " + req.ip + " connected at " + Date.now());
+  var Flickr = require("flickr-sdk");
+  var FlickrOptions = {
+    api_key: "b8a2e422605e075c1d67fcb3c216ee77",
+    secret: "7c0da767e90a9bda"
+  };
+  var oauth = new Flickr.OAuth(
+    "b8a2e422605e075c1d67fcb3c216ee77",
+    "7c0da767e90a9bda"
+  );
+
+  oauth.request('http://localhost:3000/oauth/callback').then(function (res) {
+    console.log('yay!', res);
+  }).catch(function (err) {
+    console.error('bonk', err);
+  });
+  res.send('{ flickr: success }');
 });
 
 
