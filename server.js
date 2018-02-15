@@ -259,6 +259,7 @@ app.get('/gc', function (req, res) {
   mongodb.connect(mongoURL, function(err, db) {
     if (err) throw err;
     var dbo = db.db("istory");
+    dbo.collection("googleCloudStorage").findOne({}, function(err, result) {
       if (err) throw err;
       console.log(result);
       db.close();
