@@ -119,6 +119,7 @@ app.use(function(req, res, next){
 app.use('/js', express.static(__dirname + '/js/bootstrap')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/js/jquery')); // redirect JS jQuery
 app.use('/css', express.static(__dirname + '/css/bootstrap')); // redirect CSS bootstrap
+app.use('/public', express.static(__dirname + '/public')); // redirect CSS bootstrap
 ////
 
 // Configure express to use handlebars templates
@@ -249,6 +250,91 @@ app.get('/flickr', function (req, res) {
   res.send('{ flickr: success }');
 });
 
+app.get('/gc', function (req, res) {
+  console.log("gc: " + req.ip + " connected at " + Date.now());
+
+  var gcCredentials = {};
+  var mongodb = require('mongodb');
+  if (mongodb == null) return;
+  mongodb.connect(mongoURL, function(err, db) {
+    if (err) throw err;
+    var dbo = db.db("istory");
+      if (err) throw err;
+      console.log(result);
+      db.close();
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: 'iStory-25dc782964c4',
+        //keyFilename: './public/iStory-25dc782964c4.json'
+        credentials:  {
+                        "type": gcCredentials.type,
+                        "project_id": gcCredentials.project_id,
+                        "private_key_id": gcCredentials.private_key_id,
+                        "private_key": gcCredentials.private_key,
+                        "client_email": gcCredentials.client_email,
+                        "client_id": gcCredentials.client_id,
+                        "auth_uri": gcCredentials.auth_uri,
+                        "token_uri": gcCredentials.token_uri,
+                        "auth_provider_x509_cert_url": gcCredentials.auth_provider_x509_cert_url,
+                        "client_x509_cert_url": gcCredentials.client_x509_cert_url
+                      }
+      })
+
+      var BUCKET_NAME = 'istory-bucket'
+
+      var myBucket = storage.bucket(BUCKET_NAME)
+
+      // check if a file exists in bucket
+      var file = myBucket.file('myImage.jpg')
+      file.existsAsync()
+        .then(exists => {
+          if (exists) {
+            // file exists in bucket
+          }
+        })
+        .catch(err => {
+           return err
+        })
+
+
+      // upload file to bucket
+      let localFileLocation = './public/test.jpg'
+      myBucket.uploadAsync(localFileLocation, { public: true })
+        .then(file => {
+          // file saved
+          res.send(file);
+        })
+
+      // get public url for file
+      var getPublicThumbnailUrlForItem = file_name => {
+        return `https://storage.googleapis.com/${BUCKET_NAME}/${file_name}`
+      }
+
+      //list files
+      storage
+      .bucket(BUCKET_NAME)
+      .getFiles()
+      .then(results => {
+        const files = results[0];
+      
+        console.log('Files:');
+        files.forEach(file => {
+          console.log(file.name);
+        });
+      })
+      .catch(err => {
+        console.error('ERROR:', err);
+      });
+
+    });
+  });
+
+  
+});
 
 ////router
 //displays our homepage

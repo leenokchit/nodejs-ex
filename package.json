@@ -4,7 +4,10 @@
   "description": "Node.js sample app for OpenShift 3",
   "main": "server.js",
   "dependencies": {
+    "@google-cloud/storage": "^1.5.2",
+    "api_500px": "0.0.3",
     "bcryptjs": "^0.7.12",
+    "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "chai": "^3.5.0",
     "chai-http": "^2.0.1",
