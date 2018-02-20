@@ -12,6 +12,7 @@ var express = require('express'),
 
 
 var funct = require('./functions.js');
+var Config = require('./serverjs/config.js');
 
 Object.assign=require('object-assign')
 
@@ -118,8 +119,11 @@ app.use(function(req, res, next){
 //// 
 app.use('/js', express.static(__dirname + '/js/bootstrap')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/js/jquery')); // redirect JS jQuery
+app.use('/js', express.static(__dirname + '/js')); // redirect JS
 app.use('/css', express.static(__dirname + '/css/bootstrap')); // redirect CSS bootstrap
+app.use('/css', express.static(__dirname + '/css')); // redirect CSS
 app.use('/public', express.static(__dirname + '/public')); // redirect CSS bootstrap
+app.use('/serverjs', express.static(__dirname + '/serverjs')); // redirect CSS bootstrap
 ////
 
 // Configure express to use handlebars templates
@@ -337,11 +341,107 @@ app.get('/gc', function (req, res) {
   
 });
 
+app.get('/createBucket2', function (req, res) {
+  console.log("createBucket: " + req.ip + " connected at " + Date.now());
+
+  var config = new Config();
+  var gcCredentials = {};
+  config.getGcCredentials()
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: {
+                        "type": gcCredentials.type,
+                        "project_id": gcCredentials.project_id,
+                        "private_key_id": gcCredentials.private_key_id,
+                        "private_key": gcCredentials.private_key,
+                        "client_email": gcCredentials.client_email,
+                        "client_id": gcCredentials.client_id,
+                        "auth_uri": gcCredentials.auth_uri,
+                        "token_uri": gcCredentials.token_uri,
+                        "auth_provider_x509_cert_url": gcCredentials.auth_provider_x509_cert_url,
+                        "client_x509_cert_url": gcCredentials.client_x509_cert_url
+                      }
+      })
+
+      var gcBucket = require('./serverjs/buckets.js');
+      console.log(gcBucket);
+      var bucket = new gcBucket('abc');
+      bucket.createBucket('abc',storage);
+    }
+  });
+});
+
+app.get('/listBuckets', function (req, res) {
+  console.log("listBuckets: " + req.ip + " connected at " + Date.now());
+
+  var config = new Config();
+  var gcCredentials = {};
+  config.getGcCredentials()
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+
+      var gcBucket = require('./serverjs/buckets.js');
+      console.log(gcBucket);
+      var bucket = new gcBucket('abc');
+      bucket.listBuckets(storage).then(function(result){
+        console.log(result);
+        res.send(result);
+      });
+    }
+  });
+});
+
+
+app.get('/getCr', function (req, res) {
+  var Promise = require('bluebird');
+  var Config = require('./serverjs/config.js');
+
+
+  var c = new Config();
+  c.getGcCredentials()
+  .then(function(result) {
+    if(result != false)
+    {
+      console.log(result);
+      res.send(result);
+    }
+  }).catch(function(e){
+    console.log(e);
+  })
+});
+
+
 ////router
 //displays our homepage
 app.get('/home', function(req, res){
   console.log("home: " + req.ip + " connected at " + Date.now());
   res.render('home', {user: req.user});
+});
+
+//displays our istory page
+app.get('/istory', function(req, res){
+  console.log("istory: " + req.ip + " connected at " + Date.now());
+  res.render('istory');
 });
 
 //displays our signup page
