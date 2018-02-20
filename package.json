@@ -19,6 +19,7 @@
     "express-session": "^1.15.6",
     "flickr-sdk": "^3.6.0",
     "flickrapi": "^0.6.0",
+    "gm": "^1.23.1",
     "method-override": "^2.3.10",
     "mocha": "^2.4.5",
     "mongodb": "^2.1.16",

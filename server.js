@@ -305,13 +305,21 @@ app.get('/gc', function (req, res) {
            return err
         })
 
+        const fs = require('fs');
+        const gm = require('gm').subClass({imageMagick: true});
+
+        var writeStream = fs.createWriteStream('./public/test2.jpg');
+          gm('./public/test.jpg')
+          .resize('100', '100')
+          .stream()
+          .pipe(writeStream);
 
       // upload file to bucket
       let localFileLocation = './public/test.jpg'
       myBucket.uploadAsync(localFileLocation, { public: true })
         .then(file => {
           // file saved
-          res.send(file);
+          //res.send(file);
         })
 
       // get public url for file
@@ -326,6 +334,8 @@ app.get('/gc', function (req, res) {
       .then(results => {
         const files = results[0];
       
+        res.send(files);
+
         console.log('Files:');
         files.forEach(file => {
           console.log(file.name);
