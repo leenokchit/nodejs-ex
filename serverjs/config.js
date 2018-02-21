@@ -55,11 +55,15 @@ var Config = function() {
 
 Config.prototype.getGcCredentials = function(success, failure){
     var deferred = Q.defer();
+    console.log('getGcCredentials start');
+    console.log('mongourl: ' + mongodbUrl);
     MongoClient.connectAsync(mongodbUrl).then(function(db){
+    console.log('MongoClient connected');
     var dbo = db.db("istory");
       var collection = dbo.collection('googleCloudStorage');
       collection.findOneAsync()
         .then(function (result) {
+            console.log('gcCredentials: ' + result);
             db.close();
             gcCredentials = result;
 
