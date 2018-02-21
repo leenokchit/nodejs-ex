@@ -8,9 +8,11 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     methodOverride = require('method-override'),
-    session = require('express-session');
+    session = require('express-session'),
+    multer  = require('multer'),
+    fileUpload = require("express-fileupload");
 
-
+var upload = multer({ dest: 'uploads/' });
 var funct = require('./functions.js');
 var Config = require('./serverjs/config.js');
 
@@ -98,6 +100,7 @@ app.use(methodOverride());
 app.use(session({ secret: 'supernova' }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(fileUpload());
 
 app.use(function(req, res, next){
   var err = req.session.error,
@@ -289,7 +292,7 @@ app.get('/gc', function (req, res) {
                       }
       })
 
-      var BUCKET_NAME = 'istory-bucket'
+      var BUCKET_NAME = 'istory-bucket';
 
       var myBucket = storage.bucket(BUCKET_NAME)
 
@@ -349,6 +352,128 @@ app.get('/gc', function (req, res) {
   });
 
   
+});
+
+app.post('/upload', function (req, res, next) {
+  
+  console.log("upload: " + req.ip + " connected at " + Date.now());
+
+  var config = new Config();
+  var gcCredentials = {};
+  config.getGcCredentials()
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+
+      var BUCKET_NAME = 'istory-bucket';
+      var THUMBNAIL_BUCKET_NAME = 'thumbnail-' + BUCKET_NAME;
+      var myBucket = storage.bucket(BUCKET_NAME)
+      var myBucket_thumbnail = storage.bucket(THUMBNAIL_BUCKET_NAME)
+
+      
+      //const restify = require("restify");
+      const uuidv4 = require("uuid/v4");
+      const fs = require("fs");
+
+      var filescount = 0;
+      if(req.files.file.length > 1)
+        filescount = req.files.file.length;
+      else
+        filescount = 1;
+      for(var i = 0; i < filescount; i++)
+      {
+        var file = filescount == 1 ? req.files.file : req.files.file[i];
+        //const {file} = req.files.file[i];
+        const gcsname = uuidv4() + '.' + file.name.split(/[. ]+/).pop();
+        const gcsname_thumbnail = 'thumbnail-' + gcsname;
+        //const gcsname = file.name;
+        const files = myBucket.file(gcsname);
+        const files_thumbnail = myBucket_thumbnail.file(gcsname_thumbnail);
+
+        var streamifier = require('streamifier');
+
+        //fs.createReadStream(file.data)
+      
+        streamifier.createReadStream(file.data)
+        .pipe(files.createWriteStream({
+          metadata: {
+            contentType: file.type
+          }
+        }))
+        .on("error", (err) => {
+          console.log(err);
+          //restify.InternalServerError(err);
+        })
+        .on('finish', () => {
+
+          var file = myBucket.file(gcsname);
+          // Make a file publicly readable.
+          var options = {
+            entity: 'allUsers',
+            role: storage.acl.READER_ROLE
+          };
+          file.acl.add(options).then(function(data) {
+            var aclObject = data[0];
+            var apiResponse = data[1];
+          });
+
+          //File Path:
+          //`https://storage.googleapis.com/${BUCKET_NAME}/${gcsname}`
+          
+        });
+
+
+        const gm = require('gm').subClass({imageMagick: true});
+
+        gm(streamifier.createReadStream(file.data))
+        .resize('200', '200')
+        .stream()
+        .pipe(files_thumbnail.createWriteStream({
+          metadata: {
+            contentType: file.type
+          }
+        }))
+        .on("error", (err) => {
+          console.log(err);
+          //restify.InternalServerError(err);
+        })
+        .on('finish', () => {
+  
+          var files_thumbnail = myBucket_thumbnail.file(gcsname_thumbnail);
+          // Make a file publicly readable.
+          var options = {
+            entity: 'allUsers',
+            role: storage.acl.READER_ROLE
+          };
+          files_thumbnail.acl.add(options).then(function(data) {
+            var aclObject = data[0];
+            var apiResponse = data[1];
+          });
+        });
+      }
+      res.json({
+        success: true
+      })
+    }
+
+    else
+    {
+      res.json({
+        success: false,
+        errMessage: `Get google cloud credentials fail!`
+      })
+    }
+  });
 });
 
 app.get('/createBucket2', function (req, res) {

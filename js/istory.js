@@ -1,7 +1,29 @@
 $(function() {
-function getRandomSize(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-  }
+    function getRandomSize(min, max) {
+        return Math.round(Math.random() * (max - min) + min);
+    } 
+    function photoUpload(){
+        var dataform = new FormData($("#photoUpload")[0]);
+
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: dataform,
+            async: false,
+            success: function (res) {
+                console.log(res);
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+
+    $("#photoUpload").submit(function(event){
+        event.preventDefault();
+        photoUpload();
+    });
+
   
   var allImages = "";
   
