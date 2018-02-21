@@ -47,7 +47,10 @@ var MongoClient = require('mongodb').MongoClient
 exports.localReg = function (username, password) {
   var deferred = Q.defer();
   
+  console.log(mongoURL);
   MongoClient.connect(mongodbUrl, function (err, db) {
+
+    console.log('mongodb connected');
     var collection = db.collection('localUsers');
 
     //check if username is already assigned in our database
