@@ -90,7 +90,10 @@ exports.localReg = function (username, password) {
 exports.localAuth = function (username, password) {
   var deferred = Q.defer();
 
+  console.log(mongoURL);
+  
   MongoClient.connect(mongodbUrl, function (err, db) {
+    console.log('mongodb connected');
     var collection = db.collection('localUsers');
 
     collection.findOne({'username' : username})
