@@ -1,13 +1,57 @@
-<form id="photoUpload" method="POST" enctype="multipart/form-data">
-  <input type="file" name="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp"  multiple="multiple" accept="image/*">
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-<div id="my_nanogallery2"></div>
-<section id="photos"></section>
-<button id="btn_add" class="btn btn-primary">add</button>
+<div id="app-gallery">
+  <div v-show="seen" id="istory-gallery">
+    <form id="photoUpload" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp"  multiple="multiple" accept="image/*">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div id="my_nanogallery2"></div>
+    <section id="photos"></section>
+    <button id="btn_add" class="btn btn-primary">add</button>
+    <span>{{{test}}}</span>
+    <span v-for="bucket in bucketlist">{{bucket.name}}</span>
+
+    <div class="pos-f-t">
+      <nav class="navbar fixed-bottom navbar-light bg-faded">
+        {{!-- <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button> --}}
+        <a class="navbar-brand" href="#">
+          <div class="row">
+            <div class="col-md-6 col-sm-9 col-xs-2 nav-col-9">
+              <form>
+                <div class="form-group">
+                  <select class="form-control" id="exampleSelect1">
+                    <option v-for="bucket in bucketlist">
+                      {{ bucket }}
+                    </option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-6 col-sm-3 col-xs-2 nav-col-3">
+              <button class="btn btn-outline-success float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">+</button>
+            </div>
+          </div>
+          
+        </a>
+
+        <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
+          <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Link 1 <span class="sr-only">(current)</span></a></li>
+          <li><a href="#">Link 2</a></li>
+          <li><a href="#">Link 3</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+</div>
 
 <link rel="stylesheet" href="/css/istory.css">
+<link rel="stylesheet" href="/css/gallery.css">
 <link rel="stylesheet" href="/css/nanogallery2.min.css">
 <link rel="stylesheet" href="/css/nanogallery2.woff.min.css">
 <script src="/js/istory.js"></script> 
 <script src="/js/jquery.nanogallery2.min.js"></script> 
+

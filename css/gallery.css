@@ -1,0 +1,16 @@
+@media (max-width: 576px) {
+    .nav-col-9 {
+        position: relative;
+        width: 75% !important;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+    .nav-col-3 {
+        position: relative;
+        width: 25% !important;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+  }

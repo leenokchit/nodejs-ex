@@ -19,7 +19,9 @@
   {{!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>  --}}
   <script src="/js/jquery-3.3.1.min.js"></script> 
   <script src="/js/tether.min.js"></script> 
-  <script src="https://v4-alpha.getbootstrap.com/dist/js/bootstrap.min.js"></script> 
+  <script src="https://v4-alpha.getbootstrap.com/dist/js/bootstrap.min.js"></script>
+  <script src="/js/vue/vue.js"></script>
+    
   
   </head>
 
@@ -33,13 +35,13 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="javascript:app_gallery.showapp()">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Features</a>
+            <a class="nav-link" href="#">Calendar</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Pricing</a>
+            <a class="nav-link" href="#">Gallery</a>
           </li>
         </ul>
         {{#if user}}
@@ -56,7 +58,7 @@
         {{/if}}
       </div>
     </nav>
-    <div class="container">
+    {{!-- <div class="container"> --}}
 
       {{!-- <nav class="navbar navbar-inverse bg-inverse" role="navigation">
       <div class="container-fluid">
@@ -113,7 +115,7 @@
     {{{body}}}
       
 
-    </div> <!-- /container -->
+    {{!-- </div> <!-- /container --> --}}
 
 
     <!-- Bootstrap core JavaScript
