@@ -2,7 +2,9 @@
   <div v-show="seen" id="istory-gallery">
 
     <h2>\{{currentBucket}}</h2>
-    <div id="my_nanogallery2"></div>
+    <div id="gallery_section">
+      <div id="my_nanogallery2"></div>
+    </div>
     <section id="photos"></section>
     <button id="btn_add" class="btn btn-primary">add</button>
 
@@ -16,7 +18,7 @@
             <div class="col-md-6 col-sm-9 col-xs-2 nav-col-9">
               <form>
                 <div v-if="isCollapsed" class="form-group">
-                  <select v-model="currentBucket" class="form-control" id="bucketSelect">
+                  <select v-model="currentBucket" v-on:change="changeBucket" class="form-control" id="bucketSelect">
                     <option v-for="bucket in bucketlist">
                       \{{ bucket.name }}
                     </option>

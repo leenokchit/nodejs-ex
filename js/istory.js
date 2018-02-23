@@ -38,7 +38,7 @@ $(function() {
                         }
                     });
                     _self.currentBucket = _self.bucketlist[0].id;
-                    //this.listfile();
+                    _self.listfiles();
                 }
               });
               
@@ -61,14 +61,16 @@ $(function() {
                 this.bucketlist.push(name);
             },
             listfiles: function(){
+                var _self = this
                 $.ajax({
                     type: 'get',
-                    url: '/listFiless',
+                    url: '/listFiles?bucket=' + this.currentBucket,
                     success: function (data) {
                         console.log(data);
-                        data.forEach(function(result){
+                        data.files.forEach(function(result){
                             console.log(result);
                         });
+                        _self.addFilesToGallery(data.files);
                     }
                   });
             },
@@ -95,6 +97,62 @@ $(function() {
                         timeout: 5000
                     });
                 }
+            },
+            changeBucket: function() {
+                this.listfiles();
+            },
+            addFilesToGallery: function(files){
+                $('#gallery_section').empty();
+                $("#gallery_section").append('<div id="my_nanogallery2_1"></div>');
+                
+                var items = [];
+                files.forEach(function(file){
+                    var base_url = "https://storage.googleapis.com";
+                    var bucket_name = file.bucket.id;
+                    var file_name = file.id;
+                    var abs_path = base_url + '/' + bucket_name + '/' + file_name;
+                    var abs_path_thumbnail =  base_url + '/thumbnail-' + bucket_name + '/thumbnail-' + file_name;
+                    items.push({ src: bucket_name + '/' + file_name, srct: 'thumbnail-' + bucket_name + '/thumbnail-' + file_name, title: 'Title Image 1' });
+                });
+
+                $("#my_nanogallery2_1").nanogallery2({
+                    thumbnailHeight:  200,
+                    thumbnailWidth:   200,
+                    thumbnailBorderVertical: 0,
+                    thumbnailBorderHorizontal: 0,
+                    thumbnailAlignment: "center",
+                    thumbnailLabel: {
+                        "display": false
+                      },
+                    itemsBaseURL:     'https://storage.googleapis.com/',
+                  
+                    items: items
+                  });
+
+                // var ngy2data=$("#my_nanogallery2").nanogallery2('data');
+                // var instance=$("#my_nanogallery2").nanogallery2('instance');
+
+                // files.forEach(function(file){
+                //     var base_url = "https://storage.googleapis.com";
+                //     var bucket_name = file.bucket.id;
+                //     var file_name = file.id;
+                //     var abs_path = base_url + '/' + bucket_name + '/' + file_name;
+                //     var abs_path_thumbnail =  base_url + '/thumbnail-' + bucket_name + '/thumbnail-' + file_name;
+
+                //     // create the new item
+                //     var ID=ngy2data.items.length+1;
+                //     var albumID='0';
+                //     var newItem=NGY2Item.New(instance, file_name, 'my desc', ID, albumID, 'image', '' );
+
+                //     // define thumbnail
+                //     newItem.thumbImg(abs_path_thumbnail, 200, 200); // w,h
+                //     // define URL to image
+                //     newItem.src = abs_path;
+                // });
+                
+
+                // // refresh the display (only once if you add multiple items)
+                // $("#my_nanogallery2").nanogallery2('refresh');
             },
             setCollapse: function(isCollapsed){
                 this.isCollapsed = isCollapsed;
@@ -156,7 +214,7 @@ $(function() {
 
   $("#my_nanogallery2").nanogallery2({
     thumbnailHeight:  200,
-    thumbnailWidth:   "auto",
+    thumbnailWidth:   200,
     thumbnailBorderVertical: 0,
     thumbnailBorderHorizontal: 0,
     thumbnailAlignment: "center",
@@ -166,9 +224,8 @@ $(function() {
     itemsBaseURL:     'https://storage.googleapis.com/',
   
     items: [
-        //{ src: 'istory-bucket/21817fe5-2e16-4bcc-85a1-910687ecbee9.png', srct: 'thumbnail-istory-bucket/thumbnail-21817fe5-2e16-4bcc-85a1-910687ecbee9.png', title: 'Title Image 1' },
-        //{ src: 'istory-bucket/52a3acf9-d8a8-4d64-a71c-8f7071451c84.png', srct: 'thumbnail-istory-bucket/thumbnail-52a3acf9-d8a8-4d64-a71c-8f7071451c84.png', title: 'Title Image 2' },
-        //{ src: 'istory-bucket/5fcace78-0586-4a32-be44-02e4d932af91.png', srct: 'thumbnail-istory-bucket/thumbnail-5fcace78-0586-4a32-be44-02e4d932af91.png', title: 'Title Image 3' }
+        {src: "istory-test222/148070d1-0b4e-482f-820c-761562036cbd.png", srct: "thumbnail-istory-test222/thumbnail-148070d1-0b4e-482f-820c-761562036cbd.png", title: "Title Image 1"},
+        {src: "istory-test222/98384988-7f16-455e-81c6-d56e83b0124e.png", srct: "thumbnail-istory-test222/thumbnail-98384988-7f16-455e-81c6-d56e83b0124e.png", title: "Title Image 1"}
     ]
   });
   

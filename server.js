@@ -636,6 +636,16 @@ app.get('/listBuckets', function (req, res) {
 app.get('/listFiles', function (req, res) {
   console.log("listFiles: " + req.ip + " connected at " + Date.now());
 
+  var bucket_name = req.query.bucket || '';
+  if(bucket_name.trim() == '')
+  {
+    res.send({isValid: false, errMessage: 'Missing bucket name for listing file!'});
+  }
+  else
+  {
+    bucket_name = 'istory-' + bucket_name;
+  }
+
   var config = new Config();
   var gcCredentials = {};
   config.getGcCredentials()
@@ -656,7 +666,7 @@ app.get('/listFiles', function (req, res) {
       var gcFile = require('./serverjs/file.js');
       console.log(gcFile);
       var file = new gcFile();
-      file.listFiles('istory-bucket', storage).then(function(result){
+      file.listFiles(bucket_name, storage).then(function(result){
         console.log(result);
         res.send(result);
       });
