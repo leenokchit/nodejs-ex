@@ -3,21 +3,54 @@ $(function() {
         el: '#app-gallery',
         data: {
             test: "abcdefg",
-          seen: true,
-          isFirstTimeEnter: false,
-          bucketlist: []
+            seen: true,
+            isFirstTimeEnter: false,
+            isCollapsed: true,
+            bucketlist: [],
+            browsedImageCount: 0,
+            newBucketName: '',
+            currentBucket: ''
+        },
+        created: function ()
+        {
+            // $('#galleryBrowse').on('change', function() {
+            //     this.browsedImageCount = $(this).get(0).files;
+            //   });
         },
         mounted: function (){
-            // $.ajax({
-            //     type: 'get',
-            //     url: '/listBuckets',
-            //     success: function (data) {
-            //         console.log(data);
-            //         data.forEach(function(result){
-            //             app_gallery.bucketlist.push({id: result.id, name:result.name});
-            //         });
-            //     }
-            //   })
+            var _self = this;
+            $.ajax({
+                type: 'get',
+                url: '/listBuckets',
+                success: function (data) {
+                    console.log(data);
+                    data.forEach(function(result){
+                        if(!result.id.includes("thumbnail-istory-"))
+                        {
+                            if(result.id.includes("istory-"))
+                            {
+                                _self.bucketlist.push({id: result.id.split("istory-")[1], name:result.name.split("istory-")[1]});
+                            }
+                            else
+                            {
+                                _self.bucketlist.push({id: result.id, name:result.name});
+                            }
+                        }
+                    });
+                    _self.currentBucket = _self.bucketlist[0].id;
+                    //this.listfile();
+                }
+              });
+              
+            $('#galleryBrowse').on('change', function() {
+                _self.browsedImageCount = $(this).get(0).files.length;
+              console.log(_self.browsedImageCount);
+            });
+        },
+        computed: {
+            browsedImageCountString: function(){
+                return this.browsedImageCount + " images is selected.";
+            }  
         },
         methods: {
             showapp: function () {
@@ -26,6 +59,45 @@ $(function() {
             },
             addBucket: function(name){
                 this.bucketlist.push(name);
+            },
+            listfiles: function(){
+                $.ajax({
+                    type: 'get',
+                    url: '/listFiless',
+                    success: function (data) {
+                        console.log(data);
+                        data.forEach(function(result){
+                            console.log(result);
+                        });
+                    }
+                  });
+            },
+            createBucket: function(){
+                if(this.newBucketName != '')
+                {
+                    $.ajax({
+                        url: '/createBucket',
+                        type: 'POST',
+                        dataType: "json",
+                        data: 
+                        JSON.stringify({
+                            bucketName: this.newBucketName
+                        }),
+                        async: false,
+                        success: function (res) {
+                            console.log(res);
+                        },
+                        error: function() {
+                            console.log('process error');
+                        },
+                        cache: false,
+                        contentType: "application/json; charset=utf-8",
+                        timeout: 5000
+                    });
+                }
+            },
+            setCollapse: function(isCollapsed){
+                this.isCollapsed = isCollapsed;
             }
         }
       })
@@ -46,6 +118,29 @@ $(function() {
             cache: false,
             contentType: false,
             processData: false
+        });
+    }
+
+    createBucket = function(){
+        $.ajax({
+            url: '/createBucket',
+            type: 'POST',
+            dataType: "json",
+            json: 
+            {
+                name:"abcde"
+                //bucketName: 'abcde'
+            },
+            async: false,
+            success: function (res) {
+                console.log(res);
+            },
+            error: function() {
+                console.log('process error');
+            },
+            cache: false,
+            contentType: "application/json",
+            timeout: 5000
         });
     }
 
@@ -94,6 +189,15 @@ $(function() {
     // refresh the display (only once if you add multiple items)
     $("#my_nanogallery2").nanogallery2('refresh');
   });
+
+//   $(document).on('change', ':file', function() {
+//     var input = $(this),
+//         numFiles = input.get(0).files ? input.get(0).files.length : 1,
+//         label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+//     input.trigger('fileselect', [numFiles, label]);
+//   });
+
+
 
   
 });

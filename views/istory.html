@@ -1,0 +1,66 @@
+<!-- views/layouts/main.handlebars -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="User Authentication">
+  <meta name="author" content="">
+
+  <title>User Authentication</title>
+
+  <!-- Latest compiled and minified CSS -->
+  {{!--<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">--}}
+  {{!-- <link rel="stylesheet" href="/css/bootstrap.min.css"> --}}
+  <link rel="stylesheet" href="https://v4-alpha.getbootstrap.com/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/tether.min.css">
+
+  {{!-- <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>  --}}
+  <script src="/js/jquery-3.3.1.min.js"></script> 
+  <script src="/js/tether.min.js"></script> 
+  <script src="https://v4-alpha.getbootstrap.com/dist/js/bootstrap.min.js"></script>
+  <script src="/js/vue/vue.js"></script>
+    
+  
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">iStory</a>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="javascript:app_gallery.showapp()">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Gallery</a>
+          </li>
+        </ul>
+        {{#if user}}
+        <span class="navbar-text">
+          <form class="form-inline">
+            Hi, {{user.username}}
+            <button class="btn btn-outline-success" type="button"><a href="/logout">Log Out</a></button>
+          </form>
+        </span>
+        {{else}}
+        <form class="form-inline">
+          <button class="btn btn-outline-success" type="button"><a href="/signin">Log In</a></button>
+        </form>
+        {{/if}}
+      </div>
+    </nav>
+
+
+
+
+</body>
+</html>

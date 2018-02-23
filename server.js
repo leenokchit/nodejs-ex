@@ -95,7 +95,10 @@ app.use(morgan('combined'))
 // Configure Express
 //app.use(express.logger());
 app.use(cookieParser());
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(session({ secret: 'supernova' }));
 app.use(passport.initialize());
@@ -354,9 +357,23 @@ app.get('/gc', function (req, res) {
   
 });
 
-app.post('/upload', function (req, res, next) {
-  
-  console.log("upload: " + req.ip + " connected at " + Date.now());
+app.post('/createBucket', function (req, res, next) {
+  var bucket_name = req.body.bucketName;
+  if(bucket_name == undefined)
+  {
+    res.json({
+      isValid: false,
+      errMessage: 'Invalid input'
+    });
+    return;
+  } 
+  else
+  {
+    bucket_name = 'istory-' + bucket_name.trim();
+  }
+
+
+  console.log("createBucket: " + req.ip + " connected at " + Date.now());
 
   var config = new Config();
   var gcCredentials = {};
@@ -375,7 +392,68 @@ app.post('/upload', function (req, res, next) {
         credentials: gcCredentials
       })
 
-      var BUCKET_NAME = 'istory-bucket';
+      var gcBucket = require('./serverjs/buckets.js');
+      var bucket = new gcBucket();
+      bucket.createBucket(bucket_name, storage).then(function(result){
+        console.log(result);
+        res.send(result);
+      })
+      .catch(function(err){
+        console.log(err);
+        res.send(err);
+      });
+
+      var bucket = new gcBucket();
+      bucket.createBucket('thumbnail-' + bucket_name, storage).then(function(result){
+        console.log(result);
+        //res.send(result);
+      })
+      .catch(function(err){
+        console.log(err);
+      });
+    }
+
+    else
+    {
+      res.json({
+        success: false,
+        errMessage: `Get google cloud credentials fail!`
+      });
+    }
+  });
+});
+
+app.post('/upload', function (req, res, next) {
+  console.log("upload: " + req.ip + " connected at " + Date.now());
+
+  var bucket_name = req.body.bucket || '';
+  if(bucket_name.trim() == "")
+  {
+    res.json({isValid:false, errMessage: 'Missing bucket for file to upload'});
+  }
+  else
+  {
+    bucket_name = 'istory-' + bucket_name;
+  }
+
+  var config = new Config();
+  var gcCredentials = {};
+  config.getGcCredentials()
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+
+      var BUCKET_NAME = bucket_name;
       var THUMBNAIL_BUCKET_NAME = 'thumbnail-' + BUCKET_NAME;
       var myBucket = storage.bucket(BUCKET_NAME)
       var myBucket_thumbnail = storage.bucket(THUMBNAIL_BUCKET_NAME)
@@ -388,7 +466,16 @@ app.post('/upload', function (req, res, next) {
       var filescount = 0;
       if(req.files.file.length > 1)
         filescount = req.files.file.length;
-      else
+      else if(req.files.file.length > 1)
+      {
+        filescount = 0;
+        res.json({
+          isValid: false,
+          errMessage: 'No file is selected'
+        });
+        return;
+      }
+      else  
         filescount = 1;
       for(var i = 0; i < filescount; i++)
       {
@@ -462,8 +549,8 @@ app.post('/upload', function (req, res, next) {
         });
       }
       res.json({
-        success: true
-      })
+        isValid: true
+      });
     }
 
     else
@@ -546,6 +633,36 @@ app.get('/listBuckets', function (req, res) {
   });
 });
 
+app.get('/listFiles', function (req, res) {
+  console.log("listFiles: " + req.ip + " connected at " + Date.now());
+
+  var config = new Config();
+  var gcCredentials = {};
+  config.getGcCredentials()
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+
+      var gcFile = require('./serverjs/file.js');
+      console.log(gcFile);
+      var file = new gcFile();
+      file.listFiles('istory-bucket', storage).then(function(result){
+        console.log(result);
+        res.send(result);
+      });
+    }
+  });
+});
 
 app.get('/getCr', function (req, res) {
   var Promise = require('bluebird');

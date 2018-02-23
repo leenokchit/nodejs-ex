@@ -1,14 +1,10 @@
 <div id="app-gallery">
   <div v-show="seen" id="istory-gallery">
-    <form id="photoUpload" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp"  multiple="multiple" accept="image/*">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+
+    <h2>\{{currentBucket}}</h2>
     <div id="my_nanogallery2"></div>
     <section id="photos"></section>
     <button id="btn_add" class="btn btn-primary">add</button>
-    <span>{{test}}</span>
-    <span v-for="bucket in bucketlist">{{bucket.name}}</span>
 
     <div class="pos-f-t">
       <nav class="navbar fixed-bottom navbar-light bg-faded">
@@ -19,28 +15,59 @@
           <div class="row">
             <div class="col-md-6 col-sm-9 col-xs-2 nav-col-9">
               <form>
-                <div class="form-group">
-                  <select class="form-control" id="exampleSelect1">
+                <div v-if="isCollapsed" class="form-group">
+                  <select v-model="currentBucket" class="form-control" id="bucketSelect">
                     <option v-for="bucket in bucketlist">
-                      {{ bucket }}
+                      \{{ bucket.name }}
                     </option>
                   </select>
+                </div>
+                <div v-else class="form-group">
+                  <div class="input-group mb-3">
+                    <input v-model="newBucketName" type="text" class="form-control" placeholder="Please input a new folder name" aria-label="Please input a new folder name" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                      <button v-on:click="createBucket" class="btn btn-outline-success" type="button"><span class="fa fa-plus"></span></button>
+                    </div>
+                  </div>
                 </div>
               </form>
             </div>
             <div class="col-md-6 col-sm-3 col-xs-2 nav-col-3">
-              <button class="btn btn-outline-success float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">+</button>
+              <button v-if="isCollapsed" v-on:click="setCollapse(false)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-angle-double-up"></span>
+              </button>
+              <button v-else v-on:click="setCollapse(true)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-angle-double-down"></span>
+              </button>   
             </div>
           </div>
           
         </a>
 
         <div class="collapse navbar-collapse" id="navbarToggleExternalContent">
-          <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Link 1 <span class="sr-only">(current)</span></a></li>
-          <li><a href="#">Link 2</a></li>
-          <li><a href="#">Link 3</a></li>
-          </ul>
+          {{!-- <form id="photoUpload1" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp"  multiple="multiple" accept="image/*">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form> --}}
+          <form id="photoUpload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              <div class="input-group mb-3">
+                <div class="input-group-append">
+                  <label class="btn btn-primary align-middle fa fa-camera" style="height:100%">
+                    <input id="galleryBrowse" type="file" name="file" class="form-control-file" style="display: none;" multiple="multiple" accept="image/*">
+                  </label>
+                </div>
+                <input type="text" class="form-control" aria-describedby="basic-addon2" v-bind:value="browsedImageCountString" readonly>
+                <input type="text" class="form-control" name="bucket" aria-describedby="basic-addon2" v-bind:value="currentBucket" hidden>
+                <div class="input-group-append">
+                  <button class="btn btn-primary" style="height:100%">
+                    <span class="fa fa-cloud-upload"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </form>
         </div>
       </nav>
     </div>
@@ -52,6 +79,8 @@
 <link rel="stylesheet" href="/css/gallery.css">
 <link rel="stylesheet" href="/css/nanogallery2.min.css">
 <link rel="stylesheet" href="/css/nanogallery2.woff.min.css">
+<link rel="stylesheet" href="/css/glyphicons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="/js/istory.js"></script> 
 <script src="/js/jquery.nanogallery2.min.js"></script> 
 
