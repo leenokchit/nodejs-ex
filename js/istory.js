@@ -9,7 +9,8 @@ $(function() {
             bucketlist: [],
             browsedImageCount: 0,
             newBucketName: '',
-            currentBucket: ''
+            currentBucket: '',
+            imagelist: []
         },
         created: function ()
         {
@@ -130,16 +131,17 @@ $(function() {
                   });
             },
             addFilesToGallery: function(files){
+                var _self = this;
                 $('#links').empty();
                 
-                var items = [];
+                _self.imagelist = [];
                 files.forEach(function(file){
                     var base_url = "https://storage.googleapis.com";
                     var bucket_name = file.bucket.id;
                     var file_name = file.id;
                     var abs_path = base_url + '/' + bucket_name + '/' + file_name;
                     var abs_path_thumbnail =  base_url + '/thumbnail-' + bucket_name + '/thumbnail-' + file_name;
-                    items.push({ img: bucket_name + '/' + file_name, thumbnail: 'thumbnail-' + bucket_name + '/thumbnail-' + file_name, title: file_name});
+                    // items.push({ img: bucket_name + '/' + file_name, thumbnail: 'thumbnail-' + bucket_name + '/thumbnail-' + file_name, title: file_name});
 
                     var linksContainer = $('#links');
                     $('<a/>')
@@ -148,6 +150,7 @@ $(function() {
                     .prop('title', file_name)
                     .attr('data-gallery', '')
                     .appendTo(linksContainer);
+                    _self.imagelist.push({ img: abs_path, thumbnail: abs_path_thumbnail, title: file_name})
                 });
             }
         }
@@ -200,27 +203,11 @@ $(function() {
         photoUpload();
     });
 
-
-
-
-
-
-//   $("#my_nanogallery2").nanogallery2({
-//     thumbnailHeight:  200,
-//     thumbnailWidth:   200,
-//     thumbnailBorderVertical: 0,
-//     thumbnailBorderHorizontal: 0,
-//     thumbnailAlignment: "center",
-//     thumbnailLabel: {
-//         "display": false
-//       },
-//     itemsBaseURL:     'https://storage.googleapis.com/',
-  
-//     items: [
-//         {src: "istory-test222/148070d1-0b4e-482f-820c-761562036cbd.png", srct: "thumbnail-istory-test222/thumbnail-148070d1-0b4e-482f-820c-761562036cbd.png", title: "Title Image 1"},
-//         {src: "istory-test222/98384988-7f16-455e-81c6-d56e83b0124e.png", srct: "thumbnail-istory-test222/thumbnail-98384988-7f16-455e-81c6-d56e83b0124e.png", title: "Title Image 1"}
-//     ]
-//   });
+    eventData = [
+        {"date":"2018-02-05","badge":false,"title":"Example 1"},
+        {"date":"2018-02-24","badge":true,"title":"Example 2"}
+      ];
+    calendar = $("#my-calendar").zabuto_calendar({language: "en"});
   
   $('#btn_add').on('click', function() {
     var ngy2data=$("#my_nanogallery2").nanogallery2('data');

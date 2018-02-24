@@ -3,7 +3,9 @@
 
     <h2>\{{currentBucket}}</h2>
 
-    <div id="links" class="links"></div>
+    <div id="links" class="links" >
+      {{!-- <a v-for="image in imagelist" v-bind:href="image.img" v-bind:title="image.title" data-gallery=""><img v-bind:src="image.thumbnail"></a> --}}
+    </div>
     <!-- The Gallery as lightbox dialog, should be a child element of the document body -->
     <div id="blueimp-gallery" class="blueimp-gallery">
         <div class="slides"></div>
@@ -90,18 +92,20 @@
 
 </div>
 
+<div id="app-calendar">
+  <div id="my-calendar"></div>
+</div>
+
 <link rel="stylesheet" href="/css/istory.css">
 <link rel="stylesheet" href="/css/gallery.css">
-<link rel="stylesheet" href="/css/nanogallery2.min.css">
-<link rel="stylesheet" href="/css/nanogallery2.woff.min.css">
 <link rel="stylesheet" href="/css/glyphicons.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="css/blueimp/blueimp-gallery.css">
 <link rel="stylesheet" href="css/blueimp/blueimp-gallery-indicator.css">
 <link rel="stylesheet" href="css/blueimp/blueimp-gallery-video.css">
+<link rel="stylesheet" href="css/calendar/zabuto_calendar.css">
 
 <script src="/js/istory.js"></script> 
-<script src="/js/jquery.nanogallery2.min.js"></script> 
 <script src="js/blueimp/blueimp-helper.js"></script>
 <script src="js/blueimp/blueimp-gallery.js"></script>
 <script src="js/blueimp/blueimp-gallery-fullscreen.js"></script>
@@ -110,4 +114,5 @@
 <script src="js/blueimp/blueimp-gallery-vimeo.js"></script>
 <script src="js/blueimp/blueimp-gallery-youtube.js"></script>
 <script src="js/blueimp/jquery.blueimp-gallery.js"></script>
+<script type="text/javascript" src="js/calendar/zabuto_calendar.js"></script>
 
