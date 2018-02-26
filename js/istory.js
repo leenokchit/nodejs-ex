@@ -169,12 +169,14 @@ $(function() {
             seen: false,
             isFirstTimeEnter: false,
             isCollapsed: true,
+            dayEvents: []
         },
         created: function ()
         {
         },
         mounted: function (){
             this.loadCalendar();
+            this.getCalendarDetailByDate(moment().format('YYYYMMDD'));
         },
         computed: {
         },
@@ -216,6 +218,35 @@ $(function() {
                 $('#istory-calendar').empty();
                 $('<div id="my-calendar"></div>').appendTo($('#istory-calendar'));
                 this.loadCalendar();
+            },
+            getCalendarDetailByDate: function(date){
+                var _self = this;
+                $.ajax({
+                    url: '/getCalendar?date='+date,
+                    type: 'GET',
+                    dataType: "json",
+                    async: false,
+                    success: function (res) {
+                        console.log("getCalendarByDate return with success");
+                        res.forEach(function(event){
+                            _self.dayEvents.push({
+                                id: event.id,
+                                date: event.date,
+                                dateInt: event.dateInt,
+                                title: event.title,
+                                startTime: event.startTime || "0000",
+                                endTime: event.endTime || "0000",
+                                classname: event.classname
+                            });
+                        });
+                    },
+                    error: function() {
+                        console.log('process error');
+                    },
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    timeout: 5000
+                });
             }
         }
       })

@@ -112,6 +112,13 @@
           </div>          
         </a>
         <div class="collapse navbar-collapse" id="calendarCollapse">
+          <div id="dayDetail">
+            <div v-for="event in dayEvents">
+              <div class="alert alert-success" role="alert">
+                <strong>\{{event.startTime}} - \{{event.endTime}} :</strong> \{{event.cotent}}
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
     </div>
@@ -137,4 +144,5 @@
 <script src="js/blueimp/blueimp-gallery-youtube.js"></script>
 <script src="js/blueimp/jquery.blueimp-gallery.js"></script>
 <script type="text/javascript" src="js/calendar/zabuto_calendar.js"></script>
+<script src="js/moment.js"></script>
 
