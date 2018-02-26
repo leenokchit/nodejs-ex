@@ -11,6 +11,7 @@ var express = require('express'),
     session = require('express-session'),
     multer  = require('multer'),
     fileUpload = require("express-fileupload");
+    //var jwt = require('jsonwebtoken');
 
 var upload = multer({ dest: 'uploads/' });
 var funct = require('./functions.js');
@@ -674,7 +675,8 @@ app.get('/listFiles', function (req, res) {
   });
 });
 
-app.get('/getCr', function (req, res) {
+app.get('/getCr', ensureAuthenticated, function (req, res) {
+
   var Promise = require('bluebird');
   var Config = require('./serverjs/config.js');
 
@@ -686,6 +688,34 @@ app.get('/getCr', function (req, res) {
     {
       console.log(result);
       res.send(result);
+    }
+  }).catch(function(e){
+    console.log(e);
+  })
+});
+
+app.get('/getCalendar', function (req, res) {
+  var Promise = require('bluebird');
+  var Config = require('./serverjs/config.js');
+  var Calendar = require('./serverjs/calendar.js');
+
+  var c = new Config();
+  var mongourl = c.getMongoURL();
+
+  console.log('getCalendar result: ' + mongourl);
+
+  var startDate = req.body.startDate || 0;
+  var endDate = req.body.endDate || 99999999;
+  //var queryString = "?startDate=" + startDate + "&endDate=" + endDate;
+
+  var calendar = new Calendar(mongourl);
+
+  calendar.getCalendar(startDate,endDate)
+  .then(function(result) {
+    if(result != false)
+    {
+      console.log(result);
+      res.json(result);
     }
   }).catch(function(e){
     console.log(e);
@@ -726,6 +756,9 @@ app.post('/login', passport.authenticate('local-signin', {
   })
 );
 
+app.get('/abc', ensureAuthenticated,function(req, res) {
+  res.send("acess granted");
+});
 //logs user out of site, deleting them from the session, and returns to homepage
 app.get('/logout', function(req, res){
   var name = req.user.username;

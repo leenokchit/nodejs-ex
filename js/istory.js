@@ -55,8 +55,15 @@ $(function() {
         },
         methods: {
             showapp: function () {
-              this.seen = true;
-              $("#my_nanogallery2").nanogallery2('refresh');
+                hideAllAppExcept('gallery');
+                this.seen = true;
+                $("#my_nanogallery2").nanogallery2('refresh');
+            },
+            hideapp: function () {
+                this.seen = false;
+            },
+            setCollapse: function(isCollapsed) {
+                this.isCollapsed = isCollapsed;
             },
             addBucket: function(name){
                 this.bucketlist.push(name);
@@ -155,6 +162,64 @@ $(function() {
             }
         }
       })
+    
+      app_calendar = new Vue({
+        el: '#app-calendar',
+        data: {
+            seen: false,
+            isFirstTimeEnter: false,
+            isCollapsed: true,
+        },
+        created: function ()
+        {
+        },
+        mounted: function (){
+            this.loadCalendar();
+        },
+        computed: {
+        },
+        methods: {
+            showapp: function () {
+                hideAllAppExcept('calendar');
+                this.seen = true;
+            },
+            hideapp: function () {
+                this.seen = false;
+            },
+            setCollapse: function(isCollapsed) {
+                this.isCollapsed = isCollapsed;
+            },
+            loadCalendar: function(){
+                calendar = $("#my-calendar").zabuto_calendar({
+                    today: true,
+                    nav_icon: {
+                        prev: '<i class="fa fa-chevron-circle-left"></i>',
+                        next: '<i class="fa fa-chevron-circle-right"></i>'
+                    },
+                    action: function () {
+                        return myDateFunction(this.id, false);
+                    },
+                    action_nav: function () {
+                        return myNavFunction(this.id);
+                    },
+                    ajax: {
+                        url: "getCalendar",
+                        modal: true
+                    },
+                    legend: [
+                        {type: "text", label: "Special event", badge: "00"},
+                        {type: "block", label: "Regular event"}
+                    ]
+                });
+            },
+            reloadCalendar: function(){
+                $('#istory-calendar').empty();
+                $('<div id="my-calendar"></div>').appendTo($('#istory-calendar'));
+                this.loadCalendar();
+            }
+        }
+      })
+
 
 
 
@@ -207,7 +272,29 @@ $(function() {
         {"date":"2018-02-05","badge":false,"title":"Example 1"},
         {"date":"2018-02-24","badge":true,"title":"Example 2"}
       ];
-    calendar = $("#my-calendar").zabuto_calendar({language: "en"});
+    //calendar = $("#my-calendar").zabuto_calendar({language: "en"});
+
+    // $('#istory-calendar').empty();
+    // calendar = $("#my-calendar").zabuto_calendar({
+    //         action: function () {
+    //             return myDateFunction(this.id, false);
+    //         },
+    //         action_nav: function () {
+    //             return myNavFunction(this.id);
+    //         },
+    //         data: [],
+    //         legend: [
+    //             {type: "text", label: "Special event", badge: "00"},
+    //             {type: "block", label: "Regular event"}
+    //         ]
+    //     });
+
+    function myDateFunction(id, fromModal){
+        console.log(id);
+    }
+    function myNavFunction(id){
+        console.log(id);
+    }
   
   $('#btn_add').on('click', function() {
     var ngy2data=$("#my_nanogallery2").nanogallery2('data');
@@ -235,7 +322,10 @@ $(function() {
 //   });
 
 
-
+    function hideAllAppExcept(app){
+        if(app != 'gallery') app_gallery.hideapp();
+        if(app != 'calendar') app_calendar.hideapp();
+    }
   
 });
 

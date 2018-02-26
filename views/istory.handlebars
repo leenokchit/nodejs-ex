@@ -93,7 +93,29 @@
 </div>
 
 <div id="app-calendar">
-  <div id="my-calendar"></div>
+  <div id="istory-calendar" v-show="seen">
+    <div id="my-calendar"></div>
+    <div class="pos-f-t">
+      <nav class="navbar fixed-bottom navbar-light bg-faded">
+        <a class="navbar-brand" href="#">
+          <div class="row">
+            <div class="col-md-6 col-sm-9 col-xs-2 nav-col-9">
+            </div>
+            <div class="col-md-6 col-sm-3 col-xs-2 nav-col-3">
+              <button v-if="isCollapsed" v-on:click="setCollapse(false)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#calendarCollapse" aria-controls="calendarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-angle-double-up"></span>
+              </button>
+              <button v-else v-on:click="setCollapse(true)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#calendarCollapse" aria-controls="calendarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-angle-double-down"></span>
+              </button>   
+            </div>
+          </div>          
+        </a>
+        <div class="collapse navbar-collapse" id="calendarCollapse">
+        </div>
+      </nav>
+    </div>
+  </div>
 </div>
 
 <link rel="stylesheet" href="/css/istory.css">
