@@ -695,6 +695,8 @@ app.get('/getCr', ensureAuthenticated, function (req, res) {
 });
 
 app.get('/getCalendar', function (req, res) {
+  console.log("getCalendar: " + req.ip + " connected at " + Date.now());
+
   var Promise = require('bluebird');
   var Config = require('./serverjs/config.js');
   var Calendar = require('./serverjs/calendar.js');
@@ -711,6 +713,35 @@ app.get('/getCalendar', function (req, res) {
   var calendar = new Calendar(mongourl);
 
   calendar.getCalendar(startDate,endDate)
+  .then(function(result) {
+    if(result != false)
+    {
+      console.log(result);
+      res.json(result);
+    }
+  }).catch(function(e){
+    console.log(e);
+  })
+});
+
+app.post('/insertCalendar', function (req, res) {
+  console.log("insertCalendar: " + req.ip + " connected at " + Date.now());
+  var dayEvent = req.body.dayEvent;
+
+  var Promise = require('bluebird');
+  var Config = require('./serverjs/config.js');
+  var Calendar = require('./serverjs/calendar.js');
+
+  var c = new Config();
+  var mongourl = c.getMongoURL();
+
+  var startDate = req.body.startDate || 0;
+  var endDate = req.body.endDate || 99999999;
+  //var queryString = "?startDate=" + startDate + "&endDate=" + endDate;
+
+  var calendar = new Calendar(mongourl);
+
+  calendar.insertCalendar(dayEvent.title,dayEvent.eventDate,dayEvent.startTime,dayEvent.endTime,dayEvent.content)
   .then(function(result) {
     if(result != false)
     {

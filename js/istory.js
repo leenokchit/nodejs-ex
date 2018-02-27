@@ -169,14 +169,40 @@ $(function() {
             seen: false,
             isFirstTimeEnter: false,
             isCollapsed: true,
-            dayEvents: []
+            dayEvents: [],
+            showBin: false,
+            dayEvent:{
+                title: '',
+                content: '',
+                eventDate: '',
+                startTime: '',
+                endTime: ''
+            }
         },
         created: function ()
         {
+            
         },
         mounted: function (){
             this.loadCalendar();
             this.getCalendarDetailByDate(moment().format('YYYYMMDD'));
+
+            $('#eventDatePicker').datetimepicker({
+                ignoreReadonly: true,
+                format: 'L'
+            });
+            $('#startTimePicker').datetimepicker({
+                ignoreReadonly: true,
+                format: 'LT'
+            });
+            $('#endTimePicker').datetimepicker({
+                ignoreReadonly: true,
+                format: 'LT'
+            });
+
+            $('#eventDatePicker').datetimepicker("format","YYYY-MM-DD");
+            $('#startTimePicker').datetimepicker("format","HH:mm");
+            $('#endTimePicker').datetimepicker("format","HH:mm");
         },
         computed: {
         },
@@ -230,7 +256,7 @@ $(function() {
                         console.log("getCalendarByDate return with success");
                         res.forEach(function(event){
                             _self.dayEvents.push({
-                                id: event.id,
+                                id: event._id,
                                 date: event.date,
                                 dateInt: event.dateInt,
                                 title: event.title,
@@ -239,6 +265,54 @@ $(function() {
                                 classname: event.classname
                             });
                         });
+                        _self.$nextTick(function () {
+                            $('#dayEventTrash').droppable({
+                                drop: function( event, ui ) {
+                                    var event_id = ui.draggable.attr("id");
+                                    console.log("remove event with id:" + event_id);
+                                    $('#' + event_id).remove();
+                                    _self.showBin = false;
+                                }
+                              });
+                            $('#dayDetail').children().each(function(index){
+                                $(this).draggable({ revert: "invalid" });
+                                $(this).on( "dragstart", function( event, ui ) {
+                                    _self.showBin = true;
+                                } );
+                                $(this).on( "dragstop", function( event, ui ) {
+                                    _self.showBin = false;
+                                } );
+                            });
+                        });
+                        
+                    },
+                    error: function() {
+                        console.log('process error');
+                    },
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    timeout: 5000
+                });
+            },
+            submitInsertCalendar: function(){
+                this.dayEvent.eventDate = $($('#eventDatePicker').children()[0]).val();
+                this.dayEvent.startTime = $($('#startTimePicker').children()[0]).val();
+                this.dayEvent.endTime = $($('#endTimePicker').children()[0]).val();
+                console.log(this.dayEvent);
+                this.InsertCalendar();
+            },
+            InsertCalendar: function(){
+                $.ajax({
+                    url: '/insertCalendar',
+                    type: 'POST',
+                    dataType: "json",
+                    data: 
+                    JSON.stringify({
+                        dayEvent: this.dayEvent
+                    }),
+                    async: false,
+                    success: function (res) {
+                        console.log(res);
                     },
                     error: function() {
                         console.log('process error');
