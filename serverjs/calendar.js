@@ -77,5 +77,29 @@ Calendar.prototype.insertCalendar = function(title, date, startTime, endTime, co
 
     return deferred.promise;
 };
+Calendar.prototype.removeCalendarEvent = function(id){
+  var deferred = Q.defer();
+  console.log('getCalendar start');
+  console.log('mongourl: ' + mongodbUrl);
+  MongoClient.connectAsync(mongodbUrl).then(function(db){
+  console.log('MongoClient connected');
+  var dbo = db.db("istory");
+    var collection = dbo.collection('calendar');
+    var query = 
+      {
+        "_id": new mongodb.ObjectId(id)
+      };
+    collection.deleteOne(query)
+      .then(function (result) {
+        console.log("1 calendar event is removed");
+        deferred.resolve(true);
+      })
+  }).catch(function(err){
+      console.log(err);
+      deferred.resolve(false);
+  })
+
+  return deferred.promise;
+};
 
 module.exports = Calendar;

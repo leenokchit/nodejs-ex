@@ -171,13 +171,16 @@ $(function() {
             isCollapsed: true,
             dayEvents: [],
             showBin: false,
+            selectClass: 'form-control fa fa-lg',
             dayEvent:{
                 title: '',
                 content: '',
                 eventDate: '',
                 startTime: '',
-                endTime: ''
-            }
+                endTime: '',
+                className:''
+            },
+            selectedDate:'',
         },
         created: function ()
         {
@@ -186,6 +189,7 @@ $(function() {
         mounted: function (){
             this.loadCalendar();
             this.getCalendarDetailByDate(moment().format('YYYYMMDD'));
+            this.selectedDate = moment().format('YYYY-MM-DD');
 
             $('#eventDatePicker').datetimepicker({
                 ignoreReadonly: true,
@@ -205,6 +209,9 @@ $(function() {
             $('#endTimePicker').datetimepicker("format","HH:mm");
         },
         computed: {
+            selectedClass: function(){
+                return this.dayEvent.classname + '-icon';
+            }
         },
         methods: {
             showapp: function () {
@@ -218,6 +225,7 @@ $(function() {
                 this.isCollapsed = isCollapsed;
             },
             loadCalendar: function(){
+                var _self = this;
                 calendar = $("#my-calendar").zabuto_calendar({
                     today: true,
                     nav_icon: {
@@ -225,10 +233,10 @@ $(function() {
                         next: '<i class="fa fa-chevron-circle-right"></i>'
                     },
                     action: function () {
-                        return myDateFunction(this.id, false);
+                        return _self.myDateFunction(this.id, false);
                     },
                     action_nav: function () {
-                        return myNavFunction(this.id);
+                        return _self.myNavFunction(this.id);
                     },
                     ajax: {
                         url: "getCalendar",
@@ -248,23 +256,27 @@ $(function() {
             getCalendarDetailByDate: function(date){
                 var _self = this;
                 $.ajax({
-                    url: '/getCalendar?date='+date,
+                    url: '/getCalendar?startDate='+date+'&endDate='+date,
                     type: 'GET',
                     dataType: "json",
                     async: false,
                     success: function (res) {
                         console.log("getCalendarByDate return with success");
-                        res.forEach(function(event){
-                            _self.dayEvents.push({
-                                id: event._id,
-                                date: event.date,
-                                dateInt: event.dateInt,
-                                title: event.title,
-                                startTime: event.startTime || "0000",
-                                endTime: event.endTime || "0000",
-                                classname: event.classname
+                        _self.dayEvents = [];
+                        if(JSON.stringify(res) != '{}'){
+                            res.forEach(function(event){
+                                _self.dayEvents.push({
+                                    id: event._id,
+                                    date: event.date,
+                                    dateInt: event.dateInt,
+                                    title: event.title,
+                                    startTime: event.startTime || "",
+                                    endTime: event.endTime || "",
+                                    content: event.content,
+                                    classname: event.classname
+                                });
                             });
-                        });
+                        }
                         _self.$nextTick(function () {
                             $('#dayEventTrash').droppable({
                                 drop: function( event, ui ) {
@@ -272,6 +284,7 @@ $(function() {
                                     console.log("remove event with id:" + event_id);
                                     $('#' + event_id).remove();
                                     _self.showBin = false;
+                                    _self.removeEventById(event_id);
                                 }
                               });
                             $('#dayDetail').children().each(function(index){
@@ -302,6 +315,7 @@ $(function() {
                 this.InsertCalendar();
             },
             InsertCalendar: function(){
+                var _self = this;
                 $.ajax({
                     url: '/insertCalendar',
                     type: 'POST',
@@ -313,6 +327,15 @@ $(function() {
                     async: false,
                     success: function (res) {
                         console.log(res);
+                        if(res.isValid)
+                        {
+                            _self.reloadCalendar();
+                            $("#calendarModal .close").click();
+                        }
+                        else
+                        {
+                            console.log('fail to insert Calendar Event');
+                        }
                     },
                     error: function() {
                         console.log('process error');
@@ -321,6 +344,44 @@ $(function() {
                     contentType: "application/json; charset=utf-8",
                     timeout: 5000
                 });
+            },
+            removeEventById: function(id){
+                var _self = this;
+                $.ajax({
+                    url: '/calendar/removeCalendarEvent',
+                    type: 'POST',
+                    dataType: "json",
+                    data: 
+                    JSON.stringify({
+                        id: id
+                    }),
+                    async: false,
+                    success: function (res) {
+                        console.log(res);
+                        _self.reloadCalendar();
+                        _self.getCalendarDetailByDate(_self.selectedDate);
+                    },
+                    error: function() {
+                        console.log('process error');
+                    },
+                    cache: false,
+                    contentType: "application/json",
+                    timeout: 5000
+                });
+            },
+            myDateFunction: function(id, fromModal){
+                var selectedDateData = $('#' + id).data();
+                this.selectedDate = selectedDateData.date;
+                var selectedDate = selectedDateData.date.replace(/-/g,'');
+                this.getCalendarDetailByDate(selectedDate);
+                if(this.isCollapsed)
+                {
+                    $('#calendarDetailUpBtn').click();
+                    this.setCollapse(false);
+                }
+            },
+            myNavFunction: function(id){
+                console.log(id);
             }
         }
       })
@@ -373,10 +434,10 @@ $(function() {
         photoUpload();
     });
 
-    eventData = [
-        {"date":"2018-02-05","badge":false,"title":"Example 1"},
-        {"date":"2018-02-24","badge":true,"title":"Example 2"}
-      ];
+    // eventData = [
+    //     {"date":"2018-02-05","badge":false,"title":"Example 1"},
+    //     {"date":"2018-02-24","badge":true,"title":"Example 2"}
+    //   ];
     //calendar = $("#my-calendar").zabuto_calendar({language: "en"});
 
     // $('#istory-calendar').empty();
@@ -394,12 +455,7 @@ $(function() {
     //         ]
     //     });
 
-    function myDateFunction(id, fromModal){
-        console.log(id);
-    }
-    function myNavFunction(id){
-        console.log(id);
-    }
+
   
   $('#btn_add').on('click', function() {
     var ngy2data=$("#my_nanogallery2").nanogallery2('data');

@@ -706,8 +706,10 @@ app.get('/getCalendar', function (req, res) {
 
   console.log('getCalendar result: ' + mongourl);
 
-  var startDate = req.body.startDate || 0;
-  var endDate = req.body.endDate || 99999999;
+  var startDate = req.query.startDate || 0;
+  startDate = parseInt(startDate);
+  var endDate = req.query.endDate || 99999999;
+  endDate = parseInt(endDate);
   //var queryString = "?startDate=" + startDate + "&endDate=" + endDate;
 
   var calendar = new Calendar(mongourl);
@@ -718,6 +720,10 @@ app.get('/getCalendar', function (req, res) {
     {
       console.log(result);
       res.json(result);
+    }
+    else if(result.length == 0)
+    {
+      res.json({});
     }
   }).catch(function(e){
     console.log(e);
@@ -741,18 +747,46 @@ app.post('/insertCalendar', function (req, res) {
 
   var calendar = new Calendar(mongourl);
 
-  calendar.insertCalendar(dayEvent.title,dayEvent.eventDate,dayEvent.startTime,dayEvent.endTime,dayEvent.content)
+  calendar.insertCalendar(dayEvent.title, dayEvent.eventDate, dayEvent.startTime, dayEvent.endTime, dayEvent.content)
   .then(function(result) {
     if(result != false)
     {
       console.log(result);
-      res.json(result);
+      res.json({isValid: result, message: `event '${dayEvent.content}' is added on ${dayEvent.eventDate} from ${dayEvent.startTime} to ${dayEvent.endTime}`});
     }
   }).catch(function(e){
     console.log(e);
   })
 });
+app.post('/calendar/removeCalendarEvent', function (req, res) {
+  console.log("calendar => removeCalendarEvent: " + req.ip + " connected at " + Date.now());
 
+  var Promise = require('bluebird');
+  var Config = require('./serverjs/config.js');
+  var Calendar = require('./serverjs/calendar.js');
+
+  var c = new Config();
+  var mongourl = c.getMongoURL();
+
+  var id = req.body.id || null;
+  if(id == null)
+  {
+    res.json({isValid: false, errMessage: 'missing input: id'});
+    return;
+  }
+  var calendar = new Calendar(mongourl);
+
+  calendar.removeCalendarEvent(id)
+  .then(function(result) {
+    if(result != false)
+    {
+      console.log(result);
+      res.json({isValid: true, message: `event is removed`});
+    }
+  }).catch(function(e){
+    console.log(e);
+  })
+});
 
 ////router
 //displays our homepage

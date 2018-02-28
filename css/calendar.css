@@ -1,0 +1,63 @@
+@media (max-width: 576px) {
+    .form-col-6 {
+        position: relative;
+        width: 50% !important;
+        min-height: 1px;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+  }
+.blue-event-icon
+{
+    color: #cce5ff;
+}
+.dark-event-icon
+{
+    color: #e2e3e5;
+}
+.green-event-icon
+{
+    color: #d4edda;
+}
+.red-event-icon
+{
+    color: #f8d7da;
+}
+.yellow-event-icon
+{
+    color: #fff3cd;
+}
+.lightblue-event-icon
+{
+    color: #d1ecf1;
+}
+
+.blue-event
+{
+    background-color: #cce5ff;
+}
+.dark-event
+{
+    background-color: #e2e3e5;
+}
+.green-event
+{
+    background-color: #d4edda;
+}
+.red-event
+{
+    background-color: #f8d7da;
+}
+.yellow-event
+{
+    background-color: #fff3cd;
+}
+.lightblue-event
+{
+    background-color: #d1ecf1;
+}
+
+#classNameSelect
+{
+    background-color: #343a40;
+}
