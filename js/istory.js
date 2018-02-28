@@ -178,7 +178,8 @@ $(function() {
                 eventDate: '',
                 startTime: '',
                 endTime: '',
-                className:''
+                className:'',
+                eventclass:''
             },
             selectedDate:'',
         },
@@ -189,7 +190,7 @@ $(function() {
         mounted: function (){
             this.loadCalendar();
             this.getCalendarDetailByDate(moment().format('YYYYMMDD'));
-            this.selectedDate = moment().format('YYYY-MM-DD');
+            this.selectedDate = moment().format('YYYYMMDD');
 
             $('#eventDatePicker').datetimepicker({
                 ignoreReadonly: true,
@@ -207,11 +208,30 @@ $(function() {
             $('#eventDatePicker').datetimepicker("format","YYYY-MM-DD");
             $('#startTimePicker').datetimepicker("format","HH:mm");
             $('#endTimePicker').datetimepicker("format","HH:mm");
+
+            var moment_obj = moment(this.selectedDate, 'YYYYMMDD').toDate();
+            $('#eventDatePicker').datetimepicker('date', moment_obj);
         },
         computed: {
             selectedClass: function(){
-                return this.dayEvent.classname + '-icon';
+                return this.dayEvent.eventclass + '-icon';
+            },
+            selectedDate_string: function() {
+                return this.selectedDate.slice(0, 4) + '-' + this.selectedDate.slice(4, 6) + '-' + this.selectedDate.slice(6, 8);
+            },
+            startTime_string: function() {
+                return this.dayEvents.map(function(event) {
+                    var time_string = ("0000" + event.startTime).substr(-4,4)
+                    return time_string.slice(0, 2) + ':' + time_string.slice(2, 4) + ' ';
+                });
+            },
+            endTime_string: function() {
+                return this.dayEvents.map(function(event) {
+                    var time_string = ("0000" + event.endTime).substr(-4,4)
+                    return time_string.slice(0, 2) + ':' + time_string.slice(2, 4) + ' ';
+                });
             }
+
         },
         methods: {
             showapp: function () {
@@ -239,7 +259,7 @@ $(function() {
                         return _self.myNavFunction(this.id);
                     },
                     ajax: {
-                        url: "getCalendar",
+                        url: "calendar/getCalendar",
                         modal: true
                     },
                     legend: [
@@ -256,45 +276,48 @@ $(function() {
             getCalendarDetailByDate: function(date){
                 var _self = this;
                 $.ajax({
-                    url: '/getCalendar?startDate='+date+'&endDate='+date,
+                    url: '/calendar/getCalendar?startDate='+date+'&endDate='+date,
                     type: 'GET',
                     dataType: "json",
                     async: false,
                     success: function (res) {
                         console.log("getCalendarByDate return with success");
                         _self.dayEvents = [];
-                        if(JSON.stringify(res) != '{}'){
-                            res.forEach(function(event){
-                                _self.dayEvents.push({
-                                    id: event._id,
-                                    date: event.date,
-                                    dateInt: event.dateInt,
-                                    title: event.title,
-                                    startTime: event.startTime || "",
-                                    endTime: event.endTime || "",
-                                    content: event.content,
-                                    classname: event.classname
-                                });
-                            });
-                        }
                         _self.$nextTick(function () {
-                            $('#dayEventTrash').droppable({
-                                drop: function( event, ui ) {
-                                    var event_id = ui.draggable.attr("id");
-                                    console.log("remove event with id:" + event_id);
-                                    $('#' + event_id).remove();
-                                    _self.showBin = false;
-                                    _self.removeEventById(event_id);
-                                }
-                              });
-                            $('#dayDetail').children().each(function(index){
-                                $(this).draggable({ revert: "invalid" });
-                                $(this).on( "dragstart", function( event, ui ) {
-                                    _self.showBin = true;
-                                } );
-                                $(this).on( "dragstop", function( event, ui ) {
-                                    _self.showBin = false;
-                                } );
+                            if(JSON.stringify(res) != '{}'){
+                                res.forEach(function(event){
+                                    _self.dayEvents.push({
+                                        id: event._id,
+                                        date: event.date,
+                                        dateInt: event.dateInt,
+                                        title: event.title,
+                                        startTime: event.startTime || "",
+                                        endTime: event.endTime || "",
+                                        content: event.content,
+                                        classname: event.classname,
+                                        eventclass: event.eventclass
+                                    });
+                                });
+                            }
+                            _self.$nextTick(function () {
+                                $('#dayEventTrash').droppable({
+                                    drop: function( event, ui ) {
+                                        var event_id = ui.draggable.attr("id");
+                                        console.log("remove event with id:" + event_id);
+                                        $('#' + event_id).remove();
+                                        _self.showBin = false;
+                                        _self.removeEventById(event_id);
+                                    }
+                                  });
+                                $('#dayDetail').children().each(function(index){
+                                    $(this).draggable({ revert: "invalid" });
+                                    $(this).on( "dragstart", function( event, ui ) {
+                                        _self.showBin = true;
+                                    } );
+                                    $(this).on( "dragstop", function( event, ui ) {
+                                        _self.showBin = false;
+                                    } );
+                                });
                             });
                         });
                         
@@ -317,7 +340,7 @@ $(function() {
             InsertCalendar: function(){
                 var _self = this;
                 $.ajax({
-                    url: '/insertCalendar',
+                    url: '/calendar/insertCalendar',
                     type: 'POST',
                     dataType: "json",
                     data: 
@@ -330,7 +353,12 @@ $(function() {
                         if(res.isValid)
                         {
                             _self.reloadCalendar();
-                            $("#calendarModal .close").click();
+                            _self.$nextTick(function () {
+                                _self.getCalendarDetailByDate(_self.selectedDate);
+                                $("#calendarModal .close").click();
+                            });
+                            
+                            
                         }
                         else
                         {
@@ -359,7 +387,7 @@ $(function() {
                     success: function (res) {
                         console.log(res);
                         _self.reloadCalendar();
-                        _self.getCalendarDetailByDate(_self.selectedDate);
+                        //_self.getCalendarDetailByDate(_self.selectedDate);
                     },
                     error: function() {
                         console.log('process error');
@@ -371,8 +399,12 @@ $(function() {
             },
             myDateFunction: function(id, fromModal){
                 var selectedDateData = $('#' + id).data();
-                this.selectedDate = selectedDateData.date;
+                this.selectedDate = selectedDateData.date.replace(/-/g,'');
                 var selectedDate = selectedDateData.date.replace(/-/g,'');
+                
+                var moment_obj = moment(selectedDate, 'YYYYMMDD').toDate();
+                $('#eventDatePicker').datetimepicker('date', moment_obj);
+
                 this.getCalendarDetailByDate(selectedDate);
                 if(this.isCollapsed)
                 {

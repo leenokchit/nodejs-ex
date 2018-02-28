@@ -34,6 +34,9 @@ Calendar.prototype.getCalendar = function(startDate = 0, endDate = 99999999){
       }
       collection.findAsync(query)
         .then(function (cursor) {
+          return  cursor.sort({"startTime": 1});
+        })
+        .then(function (cursor) {
           return  cursor.toArrayAsync() 
         })
         .then(function(content){
@@ -47,7 +50,7 @@ Calendar.prototype.getCalendar = function(startDate = 0, endDate = 99999999){
     return deferred.promise;
   };
 
-Calendar.prototype.insertCalendar = function(title, date, startTime, endTime, content){
+Calendar.prototype.insertCalendar = function(title, date, startTime, endTime, content, eventclass){
     var deferred = Q.defer();
     console.log('getCalendar start');
     console.log('mongourl: ' + mongodbUrl);
@@ -61,9 +64,10 @@ Calendar.prototype.insertCalendar = function(title, date, startTime, endTime, co
           content: content,
           date: date, 
           dateInt: parseInt(date.split('-')[0] + date.split('-')[1] + date.split('-')[2]),
-          startTime: startTime.split(':')[0] + startTime.split(':')[1],
-          endTime: endTime.split(':')[0] + endTime.split(':')[1],
-          badge: true
+          startTime: parseInt(startTime.split(':')[0] + startTime.split(':')[1]),
+          endTime: parseInt(endTime.split(':')[0] + endTime.split(':')[1]),
+          badge: true,
+          eventclass: eventclass,
         };
       collection.insertOneAsync(myobj)
         .then(function (result) {

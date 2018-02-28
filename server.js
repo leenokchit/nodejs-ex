@@ -694,7 +694,7 @@ app.get('/getCr', ensureAuthenticated, function (req, res) {
   })
 });
 
-app.get('/getCalendar', function (req, res) {
+app.get('/calendar/getCalendar', function (req, res) {
   console.log("getCalendar: " + req.ip + " connected at " + Date.now());
 
   var Promise = require('bluebird');
@@ -730,7 +730,7 @@ app.get('/getCalendar', function (req, res) {
   })
 });
 
-app.post('/insertCalendar', function (req, res) {
+app.post('/calendar/insertCalendar', function (req, res) {
   console.log("insertCalendar: " + req.ip + " connected at " + Date.now());
   var dayEvent = req.body.dayEvent;
 
@@ -747,7 +747,7 @@ app.post('/insertCalendar', function (req, res) {
 
   var calendar = new Calendar(mongourl);
 
-  calendar.insertCalendar(dayEvent.title, dayEvent.eventDate, dayEvent.startTime, dayEvent.endTime, dayEvent.content)
+  calendar.insertCalendar(dayEvent.title, dayEvent.eventDate, dayEvent.startTime, dayEvent.endTime, dayEvent.content, dayEvent.eventclass)
   .then(function(result) {
     if(result != false)
     {
