@@ -262,26 +262,6 @@ app.get('/pagecount', function (req, res) {
   }
 });
 
-app.get('/flickr', function (req, res) {
-  console.log("flickr: " + req.ip + " connected at " + Date.now());
-  var Flickr = require("flickr-sdk");
-  var FlickrOptions = {
-    api_key: "b8a2e422605e075c1d67fcb3c216ee77",
-    secret: "7c0da767e90a9bda"
-  };
-  var oauth = new Flickr.OAuth(
-    "b8a2e422605e075c1d67fcb3c216ee77",
-    "7c0da767e90a9bda"
-  );
-
-  oauth.request('http://localhost:3000/oauth/callback').then(function (res) {
-    console.log('yay!', res);
-  }).catch(function (err) {
-    console.error('bonk', err);
-  });
-  res.send('{ flickr: success }');
-});
-
 app.get('/gc', function (req, res) {
   console.log("gc: " + req.ip + " connected at " + Date.now());
 
@@ -499,6 +479,9 @@ app.post('/upload', function (req, res, next) {
       }
       else  
         filescount = 1;
+
+      var AsyncLock = require('async-lock');
+      var uploaded = 0;
       for(var i = 0; i < filescount; i++)
       {
         var file = filescount == 1 ? req.files.file : req.files.file[i];
@@ -538,7 +521,11 @@ app.post('/upload', function (req, res, next) {
 
           //File Path:
           //`https://storage.googleapis.com/${BUCKET_NAME}/${gcsname}`
-          
+          uploaded++;
+          console.log(uploaded + '/' + filescount + ' is uploaded!');
+          if(uploaded == filescount){
+            io.sockets.emit('upload done', true);
+          }
         });
 
 
@@ -866,7 +853,16 @@ initDb(function(err){
   console.log('Error connecting to Mongo. Message:\n'+err);
 });
 
-app.listen(port, ip);
+var server  = require('http').createServer(app);
+var io      = require('socket.io').listen(server);
+io.on('connection', function(socket){ 
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+});
+server.listen(port, ip);
+//app.listen(port, ip);
 console.log('Server running on http://%s:%s', ip, port);
 
 module.exports = app ;

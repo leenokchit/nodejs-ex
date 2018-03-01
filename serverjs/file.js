@@ -27,10 +27,10 @@ File.prototype.listFiles = function(bucketName, storage) {
     .then(results => {
       const files = results[0];
 
-      console.log('Files:');
-      files.forEach(file => {
-        console.log(file.name);
-      });
+      // console.log('Files:');
+      // files.forEach(file => {
+      //   console.log(file.name);
+      // });
       deferred.resolve({files: results[0], isValid: true});
     })
     .catch(err => {

@@ -519,6 +519,15 @@ $(function() {
         if(app != 'gallery') app_gallery.hideapp();
         if(app != 'calendar') app_calendar.hideapp();
     }
+
+    
   
 });
+
+$(function () {
+    var socket = io();
+    socket.on('upload done', function(msg){
+      console.log('upload done');
+    });
+  });
 
