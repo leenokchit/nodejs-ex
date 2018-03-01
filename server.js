@@ -482,6 +482,7 @@ app.post('/upload', function (req, res, next) {
 
       var AsyncLock = require('async-lock');
       var uploaded = 0;
+      var thumbnail_uploaded = 0;
       for(var i = 0; i < filescount; i++)
       {
         var file = filescount == 1 ? req.files.file : req.files.file[i];
@@ -526,6 +527,12 @@ app.post('/upload', function (req, res, next) {
           if(uploaded == filescount){
             io.sockets.emit('upload done', true);
           }
+          else
+          {
+            var progress = (uploaded * 100) / filescount;
+            io.sockets.emit('upload progress', progress);
+            //console.log('emit upload progress');
+          }
         });
 
 
@@ -555,6 +562,18 @@ app.post('/upload', function (req, res, next) {
             var aclObject = data[0];
             var apiResponse = data[1];
           });
+
+          thumbnail_uploaded++;
+          console.log(thumbnail_uploaded + '/' + filescount + ' is uploaded!');
+          if(thumbnail_uploaded == filescount){
+            io.sockets.emit('upload thumbnail done', true);
+          }
+          else
+          {
+            var progress = (thumbnail_uploaded * 100) / filescount;
+            io.sockets.emit('upload thumbnail progress', progress);
+            //console.log('emit upload thumbnail progress');
+          }
         });
       }
       res.json({

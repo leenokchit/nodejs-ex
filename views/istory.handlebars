@@ -21,10 +21,13 @@
       <div id="my_nanogallery2"></div>
     </div>
     <section id="photos"></section>
-    <button id="btn_add" class="btn btn-primary">add</button>
+    {{!-- <button id="btn_add" class="btn btn-primary">add</button> --}}
 
     <div class="pos-f-t">
       <nav class="navbar fixed-bottom navbar-light bg-faded">
+        <div id="uploadProgress" class="d-flex align-items-center" v-if="isUploading || isThumbnailUploading">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" v-bind:style="'width: ' + uploadProgress + '%'"></div>
+        </div>
         {{!-- <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button> --}}
@@ -53,7 +56,7 @@
               <button v-if="isCollapsed" v-on:click="setCollapse(false)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="fa fa-angle-double-up"></span>
               </button>
-              <button v-else v-on:click="setCollapse(true)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+              <button id="closeGalleryCollapseBtn" v-else v-on:click="setCollapse(true)" class="btn btn-outline-secondary float-right" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="fa fa-angle-double-down"></span>
               </button>
             </div>

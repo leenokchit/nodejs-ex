@@ -10,7 +10,10 @@ $(function() {
             browsedImageCount: 0,
             newBucketName: '',
             currentBucket: '',
-            imagelist: []
+            imagelist: [],
+            isUploading: false,
+            isThumbnailUploading: false,
+            uploadProgress: 0
         },
         created: function ()
         {
@@ -43,10 +46,17 @@ $(function() {
                 }
               });
               
+            $("#photoUpload").submit(function(event){
+                event.preventDefault();
+                _self.photoUpload();
+            });
+
             $('#galleryBrowse').on('change', function() {
                 _self.browsedImageCount = $(this).get(0).files.length;
-              console.log(_self.browsedImageCount);
+                console.log(_self.browsedImageCount);
             });
+
+            
         },
         computed: {
             browsedImageCountString: function(){
@@ -57,7 +67,7 @@ $(function() {
             showapp: function () {
                 hideAllAppExcept('gallery');
                 this.seen = true;
-                $("#my_nanogallery2").nanogallery2('refresh');
+                //$("#my_nanogallery2").nanogallery2('refresh');
             },
             hideapp: function () {
                 this.seen = false;
@@ -159,6 +169,32 @@ $(function() {
                     .appendTo(linksContainer);
                     _self.imagelist.push({ img: abs_path, thumbnail: abs_path_thumbnail, title: file_name})
                 });
+            },
+            photoUpload: function(){
+                var _self = this;
+                isUploading = true;
+                var dataform = new FormData($("#photoUpload")[0]);
+                _self.isUploading = true;
+
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: dataform,
+                    async: false,
+                    success: function (res) {
+                        console.log(res);
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            },
+            resetFileInput: function(){
+                var _self = this;
+                $('#galleryBrowse').wrap('<form>').parent('form').trigger('reset');
+                $('#galleryBrowse').unwrap();
+                _self.browsedImageCount = $('#galleryBrowse').get(0).files.length;
+                $('#closeGalleryCollapseBtn').click();
             }
         }
       })
@@ -421,22 +457,7 @@ $(function() {
 
 
 
-    function photoUpload(){
-        var dataform = new FormData($("#photoUpload")[0]);
-
-        $.ajax({
-            url: '/upload',
-            type: 'POST',
-            data: dataform,
-            async: false,
-            success: function (res) {
-                console.log(res);
-            },
-            cache: false,
-            contentType: false,
-            processData: false
-        });
-    }
+    
 
     createBucket = function(){
         $.ajax({
@@ -461,10 +482,7 @@ $(function() {
         });
     }
 
-    $("#photoUpload").submit(function(event){
-        event.preventDefault();
-        photoUpload();
-    });
+   
 
     // eventData = [
     //     {"date":"2018-02-05","badge":false,"title":"Example 1"},
@@ -525,9 +543,33 @@ $(function() {
 });
 
 $(function () {
-    var socket = io();
+    socket = io();
     socket.on('upload done', function(msg){
-      console.log('upload done');
+        console.log('upload done');
+        app_gallery.uploadProgress = 100;
+        setTimeout(function(){ 
+            app_gallery.isUploading = false; 
+            if(app_gallery.isUploading == false && app_gallery.isThumbnailUploading == false)
+            {
+                app_gallery.listfiles();
+                app_gallery.resetFileInput();
+            }
+        }, 1000);
+     });
+    socket.on('upload thumbnail done', function(msg){
+        console.log('upload thumbnail done');
+        setTimeout(function(){ 
+            app_gallery.isThumbnailUploading = false; 
+            if(app_gallery.isUploading == false && app_gallery.isThumbnailUploading == false)
+            {
+                app_gallery.listfiles();
+                app_gallery.resetFileInput();
+            }
+        }, 1000);
+    });
+    socket.on('upload progress', function(progress){
+        console.log('upload progress '+ progress);
+        app_gallery.uploadProgress = progress;
     });
   });
 
