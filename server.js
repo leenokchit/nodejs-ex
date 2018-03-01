@@ -174,7 +174,28 @@ if(process.env.APPMODE == "DEV")
 {
   mongoURL = 'mongodb://admin:padmin@127.0.0.1:27117/istory';
 }
+//
+//for heroku
+if(process.env.APPMODE == "Heroku")
+{
+  mongoURL = '';
+  var 
+  mongoHost = process.env.MLAB_HOST,
+  mongoPort = process.env.MLAB_PORT,
+  mongoDatabase = process.env.MLAB_DB,
+  mongoPassword = process.env.MLAB_PASSWORD
+  mongoUser = process.env.MLAB_USER;
 
+  if (mongoHost && mongoPort && mongoDatabase) {
+    mongoURLLabel = mongoURL = 'mongodb://';
+  if (mongoUser && mongoPassword) {
+    mongoURL += mongoUser + ':' + mongoPassword + '@';
+  }
+  // Provide UI label that excludes user id and pw
+  mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
+  mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
+  }
+}
 //
 
 var db = null,
