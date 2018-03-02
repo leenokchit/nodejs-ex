@@ -13,6 +13,7 @@
         <a class="prev">‹</a>
         <a class="next">›</a>
         <a class="close">×</a>
+        <a class="like">****</a>
         <a class="play-pause"></a>
         <ol class="indicator"></ol>
     </div>
@@ -145,7 +146,7 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <form>
+            <form id="calendarForm">
               <div class="form-group">
                 <label for="txtTitle">Title:</label>
                 <input v-model="dayEvent.title" type="text" class="form-control" id="txtTitle">

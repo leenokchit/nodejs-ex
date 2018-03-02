@@ -23,6 +23,19 @@ $(function() {
         },
         mounted: function (){
             var _self = this;
+
+            ////set up lightbox gallery
+            document.getElementById('links').onclick = function (event) {
+                event = event || window.event;
+                var target = event.target || event.srcElement,
+                    link = target.src ? target.parentNode : target,
+                    options = {index: link, event: event},
+                    links = this.getElementsByTagName('a');
+                blueimp.Gallery(links, options);
+            };
+            ////
+
+            ////get bucket list
             $.ajax({
                 type: 'get',
                 url: '/listBuckets',
@@ -44,11 +57,16 @@ $(function() {
                     _self.currentBucket = _self.bucketlist[0].id;
                     _self.listfiles();
                 }
-              });
+            });
+            ////
               
             $("#photoUpload").submit(function(event){
                 event.preventDefault();
                 _self.photoUpload();
+            });
+
+            $("#calendarForm").submit(function(event){
+                event.preventDefault();
             });
 
             $('#galleryBrowse').on('change', function() {
@@ -257,6 +275,12 @@ $(function() {
             selectedDate_string: function() {
                 return this.selectedDate.slice(0, 4) + '-' + this.selectedDate.slice(4, 6) + '-' + this.selectedDate.slice(6, 8);
             },
+            selectedMonth: function(){
+                if(this.selectedDate == "")
+                    return moment().month() + 1;
+                else
+                    return moment(this.selectedDate, "YYYYMMDD").month() + 1;
+            },
             startTime_string: function() {
                 return this.dayEvents.map(function(event) {
                     var time_string = ("0000" + event.startTime).substr(-4,4)
@@ -286,6 +310,7 @@ $(function() {
                 var _self = this;
                 calendar = $("#my-calendar").zabuto_calendar({
                     today: true,
+                    month: _self.selectedMonth, 
                     nav_icon: {
                         prev: '<i class="fa fa-chevron-circle-left"></i>',
                         next: '<i class="fa fa-chevron-circle-right"></i>'
@@ -484,14 +509,7 @@ $(function() {
         });
     }
 
-    document.getElementById('links').onclick = function (event) {
-        event = event || window.event;
-        var target = event.target || event.srcElement,
-            link = target.src ? target.parentNode : target,
-            options = {index: link, event: event},
-            links = this.getElementsByTagName('a');
-        blueimp.Gallery(links, options);
-    };
+    
    
 
 

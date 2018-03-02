@@ -166,33 +166,38 @@ File.prototype.listFiles = function(bucketName, storage) {
 //   // [END storage_download_file]
 // }
 
-// GcFile.prototype.deleteFile = function(bucketName, filename) {
-//   // [START storage_delete_file]
-//   // Imports the Google Cloud client library
-//   const Storage = require('@google-cloud/storage');
+GcFile.prototype.deleteFile = function(bucketName, filename, storage) {
+  var deferred = Q.defer();
+  // [START storage_delete_file]
+  // Imports the Google Cloud client library
+  const Storage = require('@google-cloud/storage');
 
-//   // Creates a client
-//   const storage = new Storage();
+  // Creates a client
+  //const storage = new Storage();
 
-//   /**
-//    * TODO(developer): Uncomment the following lines before running the sample.
-//    */
-//   // const bucketName = 'Name of a bucket, e.g. my-bucket';
-//   // const filename = 'File to delete, e.g. file.txt';
+  /**
+   * TODO(developer): Uncomment the following lines before running the sample.
+   */
+  // const bucketName = 'Name of a bucket, e.g. my-bucket';
+  // const filename = 'File to delete, e.g. file.txt';
 
-//   // Deletes the file from the bucket
-//   storage
-//     .bucket(bucketName)
-//     .file(filename)
-//     .delete()
-//     .then(() => {
-//       console.log(`gs://${bucketName}/${filename} deleted.`);
-//     })
-//     .catch(err => {
-//       console.error('ERROR:', err);
-//     });
-//   // [END storage_delete_file]
-// }
+  // Deletes the file from the bucket
+  storage
+    .bucket(bucketName)
+    .file(filename)
+    .delete()
+    .then(() => {
+      console.log(`gs://${bucketName}/${filename} deleted.`);
+      deferred.resolve({isValid: true, message: `gs://${bucketName}/${filename} deleted.`});
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+      deferred.resolve({isValid: true, errMessage: `delete file fail with err: ${err}`});
+    });
+  // [END storage_delete_file]
+
+  return deferred.promise;
+}
 
 // GcFileFile.prototype.getMetadata = function(bucketName, filename) {
 //   // [START storage_get_metadata]
@@ -339,37 +344,42 @@ File.prototype.listFiles = function(bucketName, storage) {
 //   // [END storage_move_file]
 // }
 
-// GcFile.prototype.copyFile = function(srcBucketName, srcFilename, destBucketName, destFilename) {
-//   // [START storage_copy_file]
-//   // Imports the Google Cloud client library
-//   const Storage = require('@google-cloud/storage');
+GcFile.prototype.copyFile = function(srcBucketName, srcFilename, destBucketName, destFilename, storage) {
+  var deferred = Q.defer();
+  // [START storage_copy_file]
+  // Imports the Google Cloud client library
+  const Storage = require('@google-cloud/storage');
 
-//   // Creates a client
-//   const storage = new Storage();
+  // Creates a client
+  //const storage = new Storage();
 
-//   /**
-//    * TODO(developer): Uncomment the following lines before running the sample.
-//    */
-//   // const srcBucketName = 'Name of the source bucket, e.g. my-bucket';
-//   // const srcFilename = 'Name of the source file, e.g. file.txt';
-//   // const destBucketName = 'Name of the destination bucket, e.g. my-other-bucket';
-//   // const destFilename = 'Destination name of file, e.g. file.txt';
+  /**
+   * TODO(developer): Uncomment the following lines before running the sample.
+   */
+  // const srcBucketName = 'Name of the source bucket, e.g. my-bucket';
+  // const srcFilename = 'Name of the source file, e.g. file.txt';
+  // const destBucketName = 'Name of the destination bucket, e.g. my-other-bucket';
+  // const destFilename = 'Destination name of file, e.g. file.txt';
 
-//   // Copies the file to the other bucket
-//   storage
-//     .bucket(srcBucketName)
-//     .file(srcFilename)
-//     .copy(storage.bucket(destBucketName).file(destFilename))
-//     .then(() => {
-//       console.log(
-//         `gs://${srcBucketName}/${srcFilename} copied to gs://${destBucketName}/${destFilename}.`
-//       );
-//     })
-//     .catch(err => {
-//       console.error('ERROR:', err);
-//     });
-//   // [END storage_copy_file]
-//   }
+  // Copies the file to the other bucket
+  storage
+    .bucket(srcBucketName)
+    .file(srcFilename)
+    .copy(storage.bucket(destBucketName).file(destFilename))
+    .then(() => {
+      console.log(
+        `gs://${srcBucketName}/${srcFilename} copied to gs://${destBucketName}/${destFilename}.`
+      );
+      deferred.resolve({isValid: true, message: `gs://${bucketName}/${filename} deleted.`});
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+      deferred.resolve({isValid: true, errMessage: `delete file fail with err: ${err}`});
+    });
+  // [END storage_copy_file]
+
+  return deferred.promise;
+  }
   
 
 
