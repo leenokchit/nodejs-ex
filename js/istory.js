@@ -29,7 +29,17 @@ $(function() {
                 event = event || window.event;
                 var target = event.target || event.srcElement,
                     link = target.src ? target.parentNode : target,
-                    options = {index: link, event: event},
+                    options = 
+                                {   
+                                    index: link, 
+                                    event: event,
+                                    onslide: function (index, slide) {
+                                        var bucketname = this.list[index].getAttribute('data-bucketname');
+                                        var filename = this.list[index].getAttribute('data-filename');
+                                        console.log(bucketname);
+                                        console.log(filename);
+                                    }
+                                },
                     links = this.getElementsByTagName('a');
                 blueimp.Gallery(links, options);
             };
@@ -134,34 +144,6 @@ $(function() {
             changeBucket: function() {
                 this.listfiles();
             },
-            addFilesToGallery1: function(files){
-                $('#gallery_section').empty();
-                $("#gallery_section").append('<div id="my_nanogallery2_1"></div>');
-                
-                var items = [];
-                files.forEach(function(file){
-                    var base_url = "https://storage.googleapis.com";
-                    var bucket_name = file.bucket.id;
-                    var file_name = file.id;
-                    var abs_path = base_url + '/' + bucket_name + '/' + file_name;
-                    var abs_path_thumbnail =  base_url + '/thumbnail-' + bucket_name + '/thumbnail-' + file_name;
-                    items.push({ src: bucket_name + '/' + file_name, srct: 'thumbnail-' + bucket_name + '/thumbnail-' + file_name, title: 'Title Image 1' });
-                });
-
-                $("#my_nanogallery2_1").nanogallery2({
-                    thumbnailHeight:  200,
-                    thumbnailWidth:   200,
-                    thumbnailBorderVertical: 0,
-                    thumbnailBorderHorizontal: 0,
-                    thumbnailAlignment: "center",
-                    thumbnailLabel: {
-                        "display": false
-                      },
-                    itemsBaseURL:     'https://storage.googleapis.com/',
-                  
-                    items: items
-                  });
-            },
             addFilesToGallery: function(files){
                 var _self = this;
                 $('#links').empty();
@@ -181,6 +163,8 @@ $(function() {
                     .prop('href', abs_path)
                     .prop('title', file_name)
                     .attr('data-gallery', '')
+                    .attr('data-bucketname', bucket_name)
+                    .attr('data-filename', file_name)
                     .appendTo(linksContainer);
                     _self.imagelist.push({ img: abs_path, thumbnail: abs_path_thumbnail, title: file_name})
                 });
