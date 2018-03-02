@@ -489,7 +489,7 @@ $(function() {
         data:{
             seen: true
         },
-        method:{
+        methods:{
             showapp: function () {
                 hideAllAppExcept('home');
                 this.seen = true;

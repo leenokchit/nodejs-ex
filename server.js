@@ -697,6 +697,9 @@ app.get('/listFiles', function (req, res) {
       file.listFiles(bucket_name, storage).then(function(result){
         console.log(result);
         res.send(result);
+      })
+      .catch(function (err){
+        console.log(err);
       });
     }
   });
