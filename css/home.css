@@ -1,0 +1,10 @@
+#app-home{
+    height:100%;
+}
+html,body{height:100%;}
+.carousel,.carousel-item,.active{height:100%;}
+.carousel-inner{height:100%;}
+
+.carousel-inner img {
+    margin: auto;
+  }

@@ -214,9 +214,9 @@ $(function() {
                 
             }
         }
-      })
+    })
     
-      app_calendar = new Vue({
+    app_calendar = new Vue({
         el: '#app-calendar',
         data: {
             seen: false,
@@ -482,8 +482,23 @@ $(function() {
                 console.log(id);
             }
         }
-      })
+    })
 
+    app_home = new Vue({
+        el:"#app-home",
+        data:{
+            seen: true
+        },
+        method:{
+            showapp: function () {
+                hideAllAppExcept('home');
+                this.seen = true;
+            },
+            hideapp: function () {
+                this.seen = false;
+            }
+        }
+    })
 
 
 
@@ -521,6 +536,7 @@ $(function() {
     function hideAllAppExcept(app){
         if(app != 'gallery') app_gallery.hideapp();
         if(app != 'calendar') app_calendar.hideapp();
+        if(app != 'home') app_home.hideapp();
     }
 
     
