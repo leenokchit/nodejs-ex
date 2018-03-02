@@ -65,9 +65,6 @@ $(function() {
                 _self.photoUpload();
             });
 
-            $("#calendarForm").submit(function(event){
-                event.preventDefault();
-            });
 
             $('#galleryBrowse').on('change', function() {
                 _self.browsedImageCount = $(this).get(0).files.length;
@@ -244,6 +241,12 @@ $(function() {
             
         },
         mounted: function (){
+            var _self = this;
+            $("#calendarForm").submit(function(event){
+                event.preventDefault();
+                _self.submitInsertCalendar();
+            });
+
             this.loadCalendar();
             this.getCalendarDetailByDate(moment().format('YYYYMMDD'));
             this.selectedDate = moment().format('YYYYMMDD');
