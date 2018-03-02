@@ -194,7 +194,9 @@ $(function() {
                 $('#galleryBrowse').wrap('<form>').parent('form').trigger('reset');
                 $('#galleryBrowse').unwrap();
                 _self.browsedImageCount = $('#galleryBrowse').get(0).files.length;
+                _self.setCollapse(true);
                 $('#closeGalleryCollapseBtn').click();
+                
             }
         }
       })
@@ -482,55 +484,17 @@ $(function() {
         });
     }
 
+    document.getElementById('links').onclick = function (event) {
+        event = event || window.event;
+        var target = event.target || event.srcElement,
+            link = target.src ? target.parentNode : target,
+            options = {index: link, event: event},
+            links = this.getElementsByTagName('a');
+        blueimp.Gallery(links, options);
+    };
    
 
-    // eventData = [
-    //     {"date":"2018-02-05","badge":false,"title":"Example 1"},
-    //     {"date":"2018-02-24","badge":true,"title":"Example 2"}
-    //   ];
-    //calendar = $("#my-calendar").zabuto_calendar({language: "en"});
 
-    // $('#istory-calendar').empty();
-    // calendar = $("#my-calendar").zabuto_calendar({
-    //         action: function () {
-    //             return myDateFunction(this.id, false);
-    //         },
-    //         action_nav: function () {
-    //             return myNavFunction(this.id);
-    //         },
-    //         data: [],
-    //         legend: [
-    //             {type: "text", label: "Special event", badge: "00"},
-    //             {type: "block", label: "Regular event"}
-    //         ]
-    //     });
-
-
-  
-  $('#btn_add').on('click', function() {
-    var ngy2data=$("#my_nanogallery2").nanogallery2('data');
-    var instance=$("#my_nanogallery2").nanogallery2('instance');
-           
-    // create the new item
-    var ID=ngy2data.items.length+1;
-    var albumID='0';
-    var newItem=NGY2Item.New(instance, 'new berlin ' + ID, 'my desc', ID, albumID, 'image', '' );
-   
-    // define thumbnail
-    newItem.thumbImg('http://nanogallery2.nanostudio.org/samples/berlin1t.jpg', 320, 212); // w,h
-    // define URL to image
-    newItem.src='http://nanogallery2.nanostudio.org/samples/berlin1.jpg';
-     
-    // refresh the display (only once if you add multiple items)
-    $("#my_nanogallery2").nanogallery2('refresh');
-  });
-
-//   $(document).on('change', ':file', function() {
-//     var input = $(this),
-//         numFiles = input.get(0).files ? input.get(0).files.length : 1,
-//         label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-//     input.trigger('fileselect', [numFiles, label]);
-//   });
 
 
     function hideAllAppExcept(app){
