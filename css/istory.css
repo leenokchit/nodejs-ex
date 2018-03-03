@@ -59,3 +59,16 @@
     max-height: auto;
     max-width: 100%;
  }
+
+ #app-calendar
+ {
+   margin-top: 60px;
+ }
+ #app-home
+ {
+   margin-top: 60px;
+ }
+ #app-gallery
+ {
+   margin-top: 60px;
+ }
