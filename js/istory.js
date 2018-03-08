@@ -13,7 +13,13 @@ $(function() {
             imagelist: [],
             isUploading: false,
             isThumbnailUploading: false,
-            uploadProgress: 0
+            uploadProgress: 0,
+            currentSlide:{
+                bucket: '',
+                file: '',
+                isLiked: false
+            },
+            favouriteList:[]
         },
         created: function ()
         {
@@ -36,13 +42,19 @@ $(function() {
                                     onslide: function (index, slide) {
                                         var bucketname = this.list[index].getAttribute('data-bucketname');
                                         var filename = this.list[index].getAttribute('data-filename');
-                                        console.log(bucketname);
-                                        console.log(filename);
+                                        _self.currentSlide.bucket = bucketname;
+                                        _self.currentSlide.file = filename;
+                                        if(_self.favouriteList.includes(filename))
+                                            _self.currentSlide.isLiked = true;
                                     }
                                 },
                     links = this.getElementsByTagName('a');
                 blueimp.Gallery(links, options);
             };
+            ////
+
+            //// get favourite photo list
+            _self.getFavouriteFiles();
             ////
 
             ////get bucket list
@@ -102,6 +114,19 @@ $(function() {
             },
             addBucket: function(name){
                 this.bucketlist.push(name);
+            },
+            getFavouriteFiles: function(){
+                var _self = this
+                $.ajax({
+                    type: 'get',
+                    url: '/listFiles?bucket=favourite',
+                    success: function (data) {
+                        console.log("Favourite photo list getted!");
+                        data.files.forEach(function(result){
+                            _self.favouriteList.push(result.name);
+                        });
+                    }
+                  });
             },
             listfiles: function(){
                 var _self = this
@@ -196,6 +221,37 @@ $(function() {
                 _self.setCollapse(true);
                 $('#closeGalleryCollapseBtn').click();
                 
+            },
+            likeFile: function(){
+                var _self = this;
+                $.ajax({
+                    url: '/gallery/likeFile',
+                    type: 'POST',
+                    dataType: "json",
+                    data: 
+                    JSON.stringify({
+                        bucket: _self.currentSlide.bucket,
+                        file: _self.currentSlide.file
+                    }),
+                    async: false,
+                    success: function (res) {
+                        console.log(res);
+                        if(res.isValid)
+                        {
+
+                        }
+                        else
+                        {
+                            console.log(res.errMessage);
+                        }
+                    },
+                    error: function(err) {
+                        console.log('process error');
+                    },
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    timeout: 5000
+                });
             }
         }
     })

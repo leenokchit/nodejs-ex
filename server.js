@@ -16,6 +16,7 @@ var express = require('express'),
 var upload = multer({ dest: 'uploads/' });
 var funct = require('./functions.js');
 var Config = require('./serverjs/config.js');
+var File = require('./serverjs/file.js');
 
 Object.assign=require('object-assign')
 
@@ -591,6 +592,105 @@ app.post('/upload', function (req, res, next) {
   });
 });
 
+app.post('/gallery/likeFile', function (req, res, next) {
+  console.log("/gallery/likeFile: " + req.ip + " connected at " + Date.now());
+
+  var bucket_name = req.body.bucket || '';
+  var file_name = req.body.file || '';
+  if(bucket_name.trim() == "" || file_name.trim() == "")
+  {
+    res.json({isValid:false, errMessage: 'Missing bucket or file name for liking the file.'});
+  }
+  else
+  {
+    bucket_name = bucket_name;
+  }
+
+  var config = new Config();
+  var galleryConfig = {};
+  var gcCredentials = {};
+
+  config.getGalleryConfig().then(function(result){
+    if(result != {})
+    {
+      galleryConfig = result;
+      return config.getGcCredentials();
+    }
+    else
+    {
+      res.json({isValid:false, errMessage: 'Cannot get gallery config.'});
+    }
+  })
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+      
+      var BUCKET_NAME = bucket_name;
+      var THUMBNAIL_BUCKET_NAME = 'thumbnail-' + BUCKET_NAME;
+      var FILE_NAME = file_name;
+
+      var DEST_BUCKET_NAME = galleryConfig.folder_prefix + galleryConfig.favourite_folder;
+      var DEST_THUMBNAIL_BUCKET_NAME = galleryConfig.thumbnail_prefix + galleryConfig.folder_prefix + galleryConfig.favourite_folder;
+      var DEST_FILE_NAME = galleryConfig.thumbnail_prefix + FILE_NAME;
+
+      var myBucket = storage.bucket(BUCKET_NAME);
+      var myBucket_thumbnail = storage.bucket(THUMBNAIL_BUCKET_NAME);
+      var myBucket_dest = storage.bucket(DEST_BUCKET_NAME);
+      var myBucket_thumbnail_dest = storage.bucket(DEST_THUMBNAIL_BUCKET_NAME);
+
+      
+      //const restify = require("restify");
+      const uuidv4 = require("uuid/v4");
+      const fs = require("fs");
+
+      var file = new File();
+      file.copyFile(BUCKET_NAME, FILE_NAME, DEST_BUCKET_NAME, FILE_NAME, storage)
+      .then(function(result){
+        console.log(result);
+        var file = myBucket_dest.file(FILE_NAME);
+        // Make a file publicly readable.
+        var options = {
+          entity: 'allUsers',
+          role: storage.acl.READER_ROLE
+        };
+        return file.acl.add(options);
+      }).then(function(result){
+        return file.copyFile(THUMBNAIL_BUCKET_NAME, DEST_FILE_NAME, DEST_THUMBNAIL_BUCKET_NAME, DEST_FILE_NAME, storage);
+      }).then(function(result){
+        var file = myBucket_thumbnail_dest.file(DEST_FILE_NAME);
+        // Make a file publicly readable.
+        var options = {
+          entity: 'allUsers',
+          role: storage.acl.READER_ROLE
+        };
+        return file.acl.add(options);
+      })
+
+      res.json({
+        isValid: true
+      });
+    }
+
+    else
+    {
+      res.json({
+        success: false,
+        errMessage: `Get google cloud credentials fail!`
+      })
+    }
+  });
+});
+
 app.get('/createBucket2', function (req, res) {
   console.log("createBucket: " + req.ip + " connected at " + Date.now());
 
@@ -709,10 +809,13 @@ app.get('/getCr', ensureAuthenticated, function (req, res) {
 
   var Promise = require('bluebird');
   var Config = require('./serverjs/config.js');
-
+  var gallery_config = {};
 
   var c = new Config();
-  c.getGcCredentials()
+  c.getGalleryConfig().then(function(result) {
+    gallery_config = result;
+    return c.getGcCredentials();
+  })
   .then(function(result) {
     if(result != false)
     {

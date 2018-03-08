@@ -160,4 +160,29 @@ Config.prototype.getGcCredentials = function(success, failure){
     return deferred.promise;
   };
 
+  Config.prototype.getGalleryConfig = function(success, failure){
+    var deferred = Q.defer();
+    console.log('getGcCredentials start');
+    console.log('mongourl: ' + mongodbUrl);
+    MongoClient.connectAsync(mongodbUrl).then(function(db){
+    console.log('MongoClient connected');
+    var dbo = db.db("istory");
+      var collection = dbo.collection('appConfig');
+      var query = 
+      {
+        "name": "galleryConfig"
+      };
+      collection.findOneAsync()
+        .then(function (result) {
+            db.close();
+            deferred.resolve(result);
+        });
+    }).catch(function(err){
+        console.log(err);
+        deferred.resolve(false);
+    })
+
+    return deferred.promise;
+  }
+
   module.exports = Config;

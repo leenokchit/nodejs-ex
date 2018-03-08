@@ -94,7 +94,7 @@ File.prototype.copyFile = function(srcBucketName, srcFilename, destBucketName, d
       console.log(
         `gs://${srcBucketName}/${srcFilename} copied to gs://${destBucketName}/${destFilename}.`
       );
-      deferred.resolve({isValid: true, message: `gs://${bucketName}/${filename} deleted.`});
+      deferred.resolve({isValid: true, message: `gs://${srcBucketName}/${srcFilename} copied.`});
     })
     .catch(err => {
       console.error('ERROR:', err);
