@@ -805,6 +805,64 @@ app.get('/listFiles', function (req, res) {
   });
 });
 
+app.get('/gallery/checkFileExist', function (req, res) {
+  console.log("checkFileExist: " + req.ip + " connected at " + Date.now());
+
+  var bucket_name = req.query.bucket || '';
+  var file_name = req.query.file || '';
+  if(bucket_name.trim() == '' || file_name.trim() == '')
+  {
+    res.send({isValid: false, errMessage: 'Missing bucket or file name for checking if file is existed!'});
+    return;
+  }
+  else
+  {
+    bucket_name = 'istory-' + bucket_name;
+  }
+
+  var config = new Config();
+  var galleryConfig = {};
+  var gcCredentials = {};
+
+  config.getGalleryConfig().then(function(result){
+    if(result != {})
+    {
+      galleryConfig = result;
+      return config.getGcCredentials();
+    }
+    else
+    {
+      res.json({isValid:false, errMessage: 'Cannot get gallery config.'});
+    }
+  })
+  .then(function(result)
+  {
+    if(result != false)
+    {
+      gcCredentials = result;
+
+      var Promise = require('bluebird');
+      var GoogleCloudStorage = Promise.promisifyAll(require('@google-cloud/storage'));
+
+      var storage = GoogleCloudStorage({
+        projectId: gcCredentials.project_id,
+        credentials: gcCredentials
+      })
+
+      var gcFile = require('./serverjs/file.js');
+      console.log(gcFile);
+      var file = new gcFile();
+      file.isFileExist(bucket_name,file_name, storage).then(function(result){
+        console.log(result);
+        res.send(result);
+      })
+      .catch(function (err){
+        console.log(err);
+      });
+    }
+  });
+});
+
 app.get('/getCr', ensureAuthenticated, function (req, res) {
 
   var Promise = require('bluebird');

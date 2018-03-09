@@ -1,4 +1,21 @@
 $(function() {
+    app_loading = new Vue({
+        el: '#app-loading',
+        data: {
+            mounted:{
+                home: false,
+                gallery: false,
+                calendar: false
+            }
+        },
+        computed:
+        {
+            isAllMounted: function(){
+                return this.mounted.home && this.mounted.gallery && this.mounted.calendar;
+            }
+        }
+    });
+
     app_gallery = new Vue({
         el: '#app-gallery',
         data: {
@@ -28,6 +45,8 @@ $(function() {
             //   });
         },
         mounted: function (){
+            app_loading.mounted.gallery = true;
+
             var _self = this;
 
             ////set up lightbox gallery
@@ -121,6 +140,7 @@ $(function() {
                     type: 'get',
                     url: '/listFiles?bucket=favourite',
                     success: function (data) {
+                        _self.favouriteList= [];
                         console.log("Favourite photo list getted!");
                         data.files.forEach(function(result){
                             _self.favouriteList.push(result.name);
@@ -281,6 +301,8 @@ $(function() {
             
         },
         mounted: function (){
+            app_loading.mounted.calendar = true;
+
             var _self = this;
             $("#calendarForm").submit(function(event){
                 event.preventDefault();
@@ -529,7 +551,10 @@ $(function() {
         data:{
             seen: true
         },
-        methods:{
+        mounted: function() {
+            app_loading.mounted.home = true;
+        },
+        methods: {
             showapp: function () {
                 hideAllAppExcept('home');
                 this.seen = true;

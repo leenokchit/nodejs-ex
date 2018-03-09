@@ -104,6 +104,25 @@ File.prototype.copyFile = function(srcBucketName, srcFilename, destBucketName, d
   return deferred.promise;
 }
 
+File.prototype.isFileExist = function(bucketName, filename, storage) {
+  var deferred = Q.defer();
+  storage
+    .bucket(bucketName)
+    .file(filename)
+    .existsAsync()
+    .then(exists => {
+      if(exists)
+        deferred.resolve({isValid: true, isExist: true});
+      else
+        deferred.resolve({isValid: true, isExist: false});
+    })
+    .catch(err => {
+      console.error('ERROR:', err);
+      deferred.resolve({isValid: true, errMessage: `Check exist fail with err: ${err}`});
+    });
+  // [END storage_copy_file]
+  return deferred.promise;
+}
 
 // GcFile.prototype.listFilesByPrefix = function(bucketName, prefix, delimiter) {
 //   // [START storage_list_files_with_prefix]
