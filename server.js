@@ -675,10 +675,6 @@ app.post('/gallery/likeFile', function (req, res, next) {
         };
         return file.acl.add(options);
       })
-
-      res.json({
-        isValid: true
-      });
     }
 
     else
@@ -688,6 +684,9 @@ app.post('/gallery/likeFile', function (req, res, next) {
         errMessage: `Get google cloud credentials fail!`
       })
     }
+  });
+  res.json({
+    isValid: true
   });
 });
 
