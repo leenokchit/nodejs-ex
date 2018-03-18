@@ -987,7 +987,7 @@ app.get('/home', function(req, res){
 });
 
 //displays our istory page
-app.get('/istory', function(req, res){
+app.get('/istory', ensureAuthenticated,function(req, res){
   console.log("istory: " + req.ip + " connected at " + Date.now());
   res.render('istory', {user: req.user});
 });
@@ -1000,14 +1000,14 @@ app.get('/signin', function(req, res){
 
 //sends the request through our local signup strategy, and if successful takes user to homepage, otherwise returns then to signin page
 app.post('/local-reg', passport.authenticate('local-signup', {
-  successRedirect: '/home',
+  successRedirect: '/istory',
   failureRedirect: '/signin'
   })
 );
 
 //sends the request through our local login/signin strategy, and if successful takes user to homepage, otherwise returns then to signin page
 app.post('/login', passport.authenticate('local-signin', { 
-  successRedirect: '/home',
+  successRedirect: '/istory',
   failureRedirect: '/signin'
   })
 );
