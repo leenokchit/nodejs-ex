@@ -989,7 +989,7 @@ app.get('/home', function(req, res){
 //displays our istory page
 app.get('/istory', function(req, res){
   console.log("istory: " + req.ip + " connected at " + Date.now());
-  res.render('istory');
+  res.render('istory', {user: req.user});
 });
 
 //displays our signup page

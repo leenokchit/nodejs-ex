@@ -55,7 +55,7 @@
         </span>
         {{else}}
         <form class="form-inline">
-          <button class="btn btn-outline-success" type="button"><a href="/signin">Log In</a></button>
+          <button class="btn btn-outline-success" type="button" onclick="goLogin()">Log In</button>
         </form>
         {{/if}}
       </div>
@@ -127,5 +127,11 @@
 
     <!-- Latest compiled and minified JavaScript -->
   {{!-- <script src="/js/bootstrap.min.js"></script>  --}}
+  <script>
+    goLogin = function(){
+      var targetUrl = "https://chit-istory.herokuapp.com/signin";
+        indow.location.replace(targetUrl);
+    }
+  </script>
 </body>
 </html>
