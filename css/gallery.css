@@ -15,6 +15,9 @@
     }
   }
 
+#links img{
+    max-width: 50%;
+}
 #uploadProgress
 {
     position: absolute;
