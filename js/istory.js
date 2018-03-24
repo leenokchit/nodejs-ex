@@ -131,6 +131,31 @@ $(function() {
             setCollapse: function(isCollapsed) {
                 this.isCollapsed = isCollapsed;
             },
+            listBuckets: function(){
+                _self.bucketlist = [];
+                $.ajax({
+                    type: 'get',
+                    url: '/listBuckets',
+                    success: function (data) {
+                        console.log(data);
+                        data.forEach(function(result){
+                            if(!result.id.includes("thumbnail-istory-"))
+                            {
+                                if(result.id.includes("istory-"))
+                                {
+                                    _self.bucketlist.push({id: result.id.split("istory-")[1], name:result.name.split("istory-")[1]});
+                                }
+                                else
+                                {
+                                    _self.bucketlist.push({id: result.id, name:result.name});
+                                }
+                            }
+                        });
+                        _self.currentBucket = _self.bucketlist[0].id;
+                        _self.listfiles();
+                    }
+                });
+            },
             addBucket: function(name){
                 this.bucketlist.push(name);
             },
@@ -163,6 +188,7 @@ $(function() {
                   });
             },
             createBucket: function(){
+                var _self = this;
                 if(this.newBucketName != '')
                 {
                     $.ajax({
@@ -176,6 +202,7 @@ $(function() {
                         async: false,
                         success: function (res) {
                             console.log(res);
+                            _self.listBuckets();
                         },
                         error: function() {
                             console.log('process error');
