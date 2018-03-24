@@ -132,6 +132,7 @@ $(function() {
                 this.isCollapsed = isCollapsed;
             },
             listBuckets: function(){
+                var _self = this;
                 _self.bucketlist = [];
                 $.ajax({
                     type: 'get',
