@@ -156,7 +156,7 @@
               <strong v-if="event.startTime != '' && event.endTime != ''">\{{startTime_string[index]}} - \{{endTime_string[index]}} :</strong>
               <strong v-else-if="event.startTime != '' && event.endTime == ''">\{{startTime_string[index]}} start :</strong>
               <strong v-else-if="event.startTime == '' && event.endTime != ''">\{{endTime_string[index]}} end :</strong>
-               \{{event.content}}
+               \{{event.title}}
             </div>
           </div>
         </div>
